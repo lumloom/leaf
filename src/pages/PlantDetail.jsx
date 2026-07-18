@@ -224,16 +224,25 @@ function TimelineItem({ event }) {
           ))}
         </div>
       )}
-      <button
-        className="btn btn-ghost btn-sm"
-        style={{ marginTop: 6, padding: '2px 6px' }}
-        onClick={async () => {
-          if (await appConfirm('이 기록을 삭제할까요?', { confirmLabel: '삭제', danger: true }))
-            eventsRepo.remove(event.id);
-        }}
-      >
-        삭제
-      </button>
+      <div style={{ display: 'flex', gap: 4, marginTop: 6 }}>
+        <Link
+          to={`/plants/${event.plantId}/log/${event.id}`}
+          className="btn btn-ghost btn-sm"
+          style={{ padding: '2px 6px' }}
+        >
+          수정
+        </Link>
+        <button
+          className="btn btn-ghost btn-sm"
+          style={{ padding: '2px 6px' }}
+          onClick={async () => {
+            if (await appConfirm('이 기록을 삭제할까요?', { confirmLabel: '삭제', danger: true }))
+              eventsRepo.remove(event.id);
+          }}
+        >
+          삭제
+        </button>
+      </div>
     </div>
   );
 }

@@ -26,6 +26,7 @@ export default function App() {
           <Route path="/plants/:id" element={<PlantDetail />} />
           <Route path="/plants/:id/edit" element={<PlantForm />} />
           <Route path="/plants/:id/log" element={<LogForm />} />
+          <Route path="/plants/:id/log/:eventId" element={<LogForm />} />
           <Route path="/plants/:id/soil" element={<SoilRecipeForm />} />
           <Route path="/plants/:id/compare" element={<Compare />} />
           <Route path="/plants/:id/passport" element={<Passport />} />
