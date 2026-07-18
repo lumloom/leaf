@@ -3,7 +3,7 @@ import PhotoImg from './PhotoImg.jsx';
 import { wateringDday, newLeafCountThisMonth } from '../data/plantUtils.js';
 
 export default function PlantCard({ plant, space, events }) {
-  const dday = wateringDday(events, plant);
+  const dday = plant.archived ? null : wateringDday(events, plant);
   const newLeaves = newLeafCountThisMonth(events, plant.id);
 
   return (

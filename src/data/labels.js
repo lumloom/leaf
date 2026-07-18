@@ -7,6 +7,12 @@ export const LIGHT_OPTIONS = [
   { value: 'low', label: '그늘' },
 ];
 
+export const HUMIDITY_OPTIONS = [
+  { value: 'moist', label: '물 많이' },
+  { value: 'medium', label: '중간' },
+  { value: 'dry', label: '건조 (과습주의)' },
+];
+
 export const AIRFLOW_OPTIONS = [
   { value: 'good', label: '통풍 좋음' },
   { value: 'normal', label: '통풍 보통' },
@@ -23,9 +29,16 @@ export const EVENT_TYPES = {
   repot: { label: '분갈이', icon: '🪴' },
   fertilizer: { label: '비료', icon: '🌾' },
   newleaf: { label: '새잎', icon: '🌱' },
+  prune: { label: '가지치기', icon: '✂️' },
+  cutting: { label: '삽목/물꽂이', icon: '🫙' },
+  move: { label: '화분위치변경', icon: '🧭' },
   pest: { label: '병충해', icon: '🐛' },
   photo: { label: '사진', icon: '📷' },
 };
 
 export const lightLabel = (v) => LIGHT_OPTIONS.find((o) => o.value === v)?.label ?? '';
 export const airflowLabel = (v) => AIRFLOW_OPTIONS.find((o) => o.value === v)?.label ?? '';
+export const humidityLabel = (v) => {
+  const found = HUMIDITY_OPTIONS.find((o) => o.value === v);
+  return found ? `습도 ${found.label}` : '';
+};

@@ -296,6 +296,34 @@ a {
   font-size: 13px;
 }
 
+/* ---------- 다이얼로그 (iOS PWA에서 confirm/alert 대체) ---------- */
+.dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(46, 44, 40, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 100;
+}
+
+.dialog-card {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: 22px 20px 16px;
+  width: 100%;
+  max-width: 320px;
+}
+
+.dialog-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 18px;
+}
+
 .brand-title {
   font-family: var(--font-display);
   font-weight: 700;

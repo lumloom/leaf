@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { spaces } from '../data/db.js';
 import { LIGHT_OPTIONS, AIRFLOW_OPTIONS, DIRECTION_OPTIONS } from '../data/labels.js';
+import { appConfirm } from '../components/dialog.js';
 
 export default function SpaceForm() {
   const { id } = useParams();
@@ -24,8 +25,12 @@ export default function SpaceForm() {
     navigate('/spaces', { replace: true });
   }
 
-  function handleDelete() {
-    if (confirm(`'${form.name}' 공간을 삭제할까요? 이 공간의 식물은 '위치 미지정'이 돼요.`)) {
+  async function handleDelete() {
+    const ok = await appConfirm(`'${form.name}' 공간을 삭제할까요?\n이 공간의 식물은 '위치 미지정'이 돼요.`, {
+      confirmLabel: '삭제',
+      danger: true,
+    });
+    if (ok) {
       spaces.remove(id);
       navigate('/spaces', { replace: true });
     }

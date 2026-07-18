@@ -4,7 +4,9 @@ import PlantCard from '../components/PlantCard.jsx';
 import { wateringDday } from '../data/plantUtils.js';
 
 export default function Home() {
-  const { plants, spaces, events } = useStore();
+  const { plants: allPlants, spaces, events } = useStore();
+  const plants = allPlants.filter((p) => !p.archived);
+  const memoriesCount = allPlants.length - plants.length;
 
   const todos = plants
     .map((p) => ({ plant: p, dday: wateringDday(events, p) }))
@@ -30,6 +32,9 @@ export default function Home() {
 
       <Link to="/plants/new" className="btn btn-primary btn-block" style={{ marginTop: 16 }}>
         + 새 식물 맞이하기
+      </Link>
+      <Link to="/memories" className="btn btn-ghost btn-block" style={{ marginTop: 8 }}>
+        🕊️ 추억보기{memoriesCount > 0 ? ` (${memoriesCount})` : ''}
       </Link>
 
       {todos.length > 0 && (

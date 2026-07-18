@@ -1,5 +1,6 @@
 import { HashRouter, Routes, Route } from 'react-router-dom';
 import BottomNav from './components/BottomNav.jsx';
+import DialogHost from './components/DialogHost.jsx';
 import Home from './pages/Home.jsx';
 import PlantForm from './pages/PlantForm.jsx';
 import PlantDetail from './pages/PlantDetail.jsx';
@@ -10,6 +11,7 @@ import SoilRecipeForm from './pages/SoilRecipeForm.jsx';
 import Compare from './pages/Compare.jsx';
 import Passport from './pages/Passport.jsx';
 import Stats from './pages/Stats.jsx';
+import Memories from './pages/Memories.jsx';
 import Settings from './pages/Settings.jsx';
 
 // HashRouter: GitHub Pages 정적 호스팅에서도 새로고침이 깨지지 않는다.
@@ -30,9 +32,11 @@ export default function App() {
           <Route path="/spaces/new" element={<SpaceForm />} />
           <Route path="/spaces/:id/edit" element={<SpaceForm />} />
           <Route path="/stats" element={<Stats />} />
+          <Route path="/memories" element={<Memories />} />
           <Route path="/settings" element={<Settings />} />
         </Routes>
         <BottomNav />
+        <DialogHost />
       </div>
     </HashRouter>
   );

@@ -2,7 +2,8 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useStore } from '../hooks/useStore.js';
 import { plants, events as eventsRepo, soilRecipes } from '../data/db.js';
 import RecipeCard from '../components/RecipeCard.jsx';
-import { EVENT_TYPES, lightLabel, airflowLabel } from '../data/labels.js';
+import { appConfirm } from '../components/dialog.js';
+import { EVENT_TYPES, lightLabel, airflowLabel, humidityLabel } from '../data/labels.js';
 import { formatDate, daysWith, wateringDday, todayIso } from '../data/plantUtils.js';
 import PhotoImg from '../components/PhotoImg.jsx';
 
@@ -37,8 +38,31 @@ export default function PlantDetail() {
     eventsRepo.save({ plantId: plant.id, type, date: todayIso(), text: '', photoIds: [] });
   }
 
-  function handleDelete() {
-    if (confirm(`'${plant.name}'와(과) 모든 기록을 삭제할까요? 되돌릴 수 없어요.`)) {
+  async function handleArchive() {
+    const ok = await appConfirm(
+      `'${plant.name}'을(를) 추억으로 보낼까요?\n식물 탭에서는 사라지지만, '추억보기'에서 언제든 다시 볼 수 있어요.`,
+      { confirmLabel: '추억으로' }
+    );
+    if (ok) {
+      plants.save({ ...plant, archived: true, archivedAt: todayIso() });
+      navigate('/', { replace: true });
+    }
+  }
+
+  async function handleRestore() {
+    const ok = await appConfirm(`'${plant.name}'을(를) 다시 우리집 식물로 되돌릴까요?`, { confirmLabel: '되돌리기' });
+    if (ok) {
+      plants.save({ ...plant, archived: false, archivedAt: null });
+      navigate('/', { replace: true });
+    }
+  }
+
+  async function handleDelete() {
+    const ok = await appConfirm(`'${plant.name}'와(과) 모든 기록을 삭제할까요?\n되돌릴 수 없어요.`, {
+      confirmLabel: '삭제',
+      danger: true,
+    });
+    if (ok) {
       plants.remove(plant.id);
       navigate('/', { replace: true });
     }
@@ -58,6 +82,7 @@ export default function PlantDetail() {
           </h1>
           {plant.species && <div className="muted">{plant.species}</div>}
           {days && <div className="muted">함께한 지 {days}일째</div>}
+          {plant.archived && <span className="badge">🕊️ 추억 속 식물</span>}
         </div>
       </div>
 
@@ -68,7 +93,7 @@ export default function PlantDetail() {
           </button>
         ))}
       </div>
-      {dday !== null && (
+      {!plant.archived && dday !== null && (
         <div className="muted" style={{ marginBottom: 8 }}>
           💧 {dday < 0 ? `물주기가 ${-dday}일 지났어요` : dday === 0 ? '오늘은 물 주는 날이에요' : `다음 물주기까지 ${dday}일`}
         </div>
@@ -83,13 +108,20 @@ export default function PlantDetail() {
           {plant.acquiredAt && <InfoRow label="우리집 온 날" value={formatDate(plant.acquiredAt)} />}
           {plant.source && <InfoRow label="구매처" value={plant.source} />}
           {plant.price && <InfoRow label="구매가격" value={`${Number(plant.price).toLocaleString()}원`} />}
-          {plant.prefs?.light && (
+          {(plant.prefs?.light || plant.prefs?.airflow || plant.prefs?.humidity) && (
             <InfoRow
               label="좋아하는 환경"
-              value={[lightLabel(plant.prefs.light), airflowLabel(plant.prefs.airflow)].filter(Boolean).join(' · ')}
+              value={[
+                lightLabel(plant.prefs.light),
+                airflowLabel(plant.prefs.airflow),
+                humidityLabel(plant.prefs.humidity),
+              ]
+                .filter(Boolean)
+                .join(' · ')}
             />
           )}
           {plant.notes && <InfoRow label="메모" value={plant.notes} />}
+          {plant.caution && <InfoRow label="⚠️ 주의사항" value={plant.caution} />}
         </div>
         <button className="btn btn-ghost btn-sm" style={{ marginTop: 10 }} onClick={() => navigate(`/plants/${plant.id}/edit`)}>
           정보 수정
@@ -117,8 +149,9 @@ export default function PlantDetail() {
               key={r.id}
               recipe={r}
               title={idx === 0 ? '🪴 현재 흙' : '이전 레시피'}
-              onDelete={() => {
-                if (confirm('이 레시피를 삭제할까요?')) soilRecipes.remove(r.id);
+              onDelete={async () => {
+                if (await appConfirm('이 레시피를 삭제할까요?', { confirmLabel: '삭제', danger: true }))
+                  soilRecipes.remove(r.id);
               }}
             />
           ))}
@@ -146,9 +179,18 @@ export default function PlantDetail() {
         </div>
       )}
 
-      <button className="btn btn-danger btn-block" style={{ margin: '28px 0 8px' }} onClick={handleDelete}>
+      <button className="btn btn-danger btn-block" style={{ margin: '28px 0 0' }} onClick={handleDelete}>
         이 식물 보내주기 (삭제)
       </button>
+      {plant.archived ? (
+        <button className="btn btn-block" style={{ margin: '8px 0' }} onClick={handleRestore}>
+          🌿 다시 우리집 식물로 (되돌리기)
+        </button>
+      ) : (
+        <button className="btn btn-block" style={{ margin: '8px 0' }} onClick={handleArchive}>
+          🕊️ 추억으로 보내주기 (이동)
+        </button>
+      )}
     </div>
   );
 }
@@ -185,8 +227,9 @@ function TimelineItem({ event }) {
       <button
         className="btn btn-ghost btn-sm"
         style={{ marginTop: 6, padding: '2px 6px' }}
-        onClick={() => {
-          if (confirm('이 기록을 삭제할까요?')) eventsRepo.remove(event.id);
+        onClick={async () => {
+          if (await appConfirm('이 기록을 삭제할까요?', { confirmLabel: '삭제', danger: true }))
+            eventsRepo.remove(event.id);
         }}
       >
         삭제

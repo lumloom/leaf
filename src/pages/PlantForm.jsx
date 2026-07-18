@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { plants } from '../data/db.js';
 import { useStore } from '../hooks/useStore.js';
-import { LIGHT_OPTIONS, AIRFLOW_OPTIONS, POT_MATERIAL_OPTIONS } from '../data/labels.js';
+import { LIGHT_OPTIONS, AIRFLOW_OPTIONS, HUMIDITY_OPTIONS, POT_MATERIAL_OPTIONS } from '../data/labels.js';
 import { rankSpaces } from '../data/match.js';
 import PhotoInput from '../components/PhotoInput.jsx';
 import Stars from '../components/Stars.jsx';
@@ -20,14 +20,14 @@ export default function PlantForm() {
       species: '',
       photoId: null,
       acquiredAt: '',
-      birthday: '',
       price: '',
       source: '',
       spaceId: '',
       potSize: '',
       potMaterial: '',
       notes: '',
-      prefs: { light: '', airflow: '' },
+      caution: '',
+      prefs: { light: '', airflow: '', humidity: '' },
       wateringIntervalDays: '',
     }
   );
@@ -87,15 +87,9 @@ export default function PlantForm() {
           </div>
         </div>
 
-        <div className="field-row">
-          <div className="field">
-            <label>구매처</label>
-            <input value={form.source ?? ''} onChange={(e) => set('source', e.target.value)} placeholder="예: 동네 꽃집" />
-          </div>
-          <div className="field">
-            <label>생일 (선택)</label>
-            <input type="date" value={form.birthday ?? ''} onChange={(e) => set('birthday', e.target.value)} />
-          </div>
+        <div className="field">
+          <label>구매처</label>
+          <input value={form.source ?? ''} onChange={(e) => set('source', e.target.value)} placeholder="예: 동네 꽃집" />
         </div>
 
         <div className="field-row">
@@ -157,6 +151,21 @@ export default function PlantForm() {
             ))}
           </div>
         </div>
+        <div className="field">
+          <label>습도 (물 취향)</label>
+          <div className="chips">
+            {HUMIDITY_OPTIONS.map((o) => (
+              <button
+                key={o.value}
+                type="button"
+                className={`chip ${form.prefs.humidity === o.value ? 'selected' : ''}`}
+                onClick={() => setPref('humidity', o.value)}
+              >
+                {o.label}
+              </button>
+            ))}
+          </div>
+        </div>
 
         {recommendations.length > 0 && (
           <div className="card" style={{ background: 'var(--color-surface-alt)', border: 'none' }}>
@@ -206,6 +215,15 @@ export default function PlantForm() {
             value={form.notes ?? ''}
             onChange={(e) => set('notes', e.target.value)}
             placeholder="이 식물만의 이야기, 특징을 남겨두세요."
+          />
+        </div>
+
+        <div className="field">
+          <label>키우기 주의사항</label>
+          <textarea
+            value={form.caution ?? ''}
+            onChange={(e) => set('caution', e.target.value)}
+            placeholder="예: 과습에 약함. 잎에 물 닿으면 무름. 겨울엔 물주기 줄이기."
           />
         </div>
 

@@ -4,6 +4,7 @@ import { clearPhotos } from '../data/photoStore.js';
 import { exportBackupZip, importBackupZip, downloadBlob } from '../data/exportMd.js';
 import { todayIso } from '../data/plantUtils.js';
 import { useStore } from '../hooks/useStore.js';
+import { appConfirm, appAlert } from '../components/dialog.js';
 
 export default function Settings() {
   const { plants, spaces, events } = useStore();
@@ -17,7 +18,7 @@ export default function Settings() {
       const blob = await exportBackupZip();
       downloadBlob(blob, `lumloom-leaf-backup-${todayIso()}.zip`);
     } catch (err) {
-      alert(`백업을 만들지 못했어요: ${err.message}`);
+      await appAlert(`백업을 만들지 못했어요: ${err.message}`);
     } finally {
       setExporting(false);
     }
@@ -27,23 +28,30 @@ export default function Settings() {
     const file = e.target.files?.[0];
     e.target.value = '';
     if (!file) return;
-    if (!confirm('백업을 불러오면 지금 앱에 있는 모든 데이터가 백업 내용으로 교체돼요. 계속할까요?')) return;
+    const ok = await appConfirm('백업을 불러오면 지금 앱에 있는 모든 데이터가 백업 내용으로 교체돼요.\n계속할까요?', {
+      confirmLabel: '불러오기',
+    });
+    if (!ok) return;
     setImporting(true);
     try {
       const result = await importBackupZip(file);
-      alert(`복원 완료! 식물 ${result.plants}개 · 공간 ${result.spaces}곳 · 기록 ${result.events}개를 불러왔어요 🌿`);
+      await appAlert(`복원 완료! 식물 ${result.plants}개 · 공간 ${result.spaces}곳 · 기록 ${result.events}개를 불러왔어요 🌿`);
     } catch (err) {
-      alert(`백업을 불러오지 못했어요: ${err.message}`);
+      await appAlert(`백업을 불러오지 못했어요: ${err.message}`);
     } finally {
       setImporting(false);
     }
   }
 
   async function handleReset() {
-    if (confirm('모든 식물·공간·기록·사진이 삭제됩니다. 정말 비울까요?')) {
+    const ok = await appConfirm('모든 식물·공간·기록·사진이 삭제됩니다.\n정말 비울까요?', {
+      confirmLabel: '전부 삭제',
+      danger: true,
+    });
+    if (ok) {
       resetAll();
       await clearPhotos();
-      alert('모든 데이터를 비웠어요. 새 마음으로 시작해요 🌱');
+      await appAlert('모든 데이터를 비웠어요. 새 마음으로 시작해요 🌱');
     }
   }
 

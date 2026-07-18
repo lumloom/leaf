@@ -3,7 +3,7 @@
 import JSZip from 'jszip';
 import { getState, replaceState } from './db.js';
 import { getPhotoBlob, putPhotoBlob, clearPhotos } from './photoStore.js';
-import { EVENT_TYPES, lightLabel, airflowLabel } from './labels.js';
+import { EVENT_TYPES, lightLabel, airflowLabel, humidityLabel } from './labels.js';
 import { formatDate, daysWith } from './plantUtils.js';
 
 const starsText = (n) => (n ? '★'.repeat(n) + '☆'.repeat(5 - n) : '평가 없음');
@@ -56,12 +56,20 @@ function plantMd(plant, { space, recipes, timeline, photoFiles }) {
   if (plant.price) lines.push(`- 구매가격: ${Number(plant.price).toLocaleString()}원`);
   if (plant.potSize || plant.potMaterial)
     lines.push(`- 화분: ${[plant.potSize, plant.potMaterial].filter(Boolean).join(' · ')}`);
-  if (plant.prefs?.light || plant.prefs?.airflow)
+  if (plant.prefs?.light || plant.prefs?.airflow || plant.prefs?.humidity)
     lines.push(
-      `- 좋아하는 환경: ${[lightLabel(plant.prefs.light), airflowLabel(plant.prefs.airflow)].filter(Boolean).join(' · ')}`
+      `- 좋아하는 환경: ${[
+        lightLabel(plant.prefs.light),
+        airflowLabel(plant.prefs.airflow),
+        humidityLabel(plant.prefs.humidity),
+      ]
+        .filter(Boolean)
+        .join(' · ')}`
     );
   if (plant.wateringIntervalDays) lines.push(`- 물주기 주기: ${plant.wateringIntervalDays}일`);
   if (plant.notes) lines.push(`- 메모: ${plant.notes}`);
+  if (plant.caution) lines.push(`- 키우기 주의사항: ${plant.caution}`);
+  if (plant.archived) lines.push(`- 상태: 추억 속 식물 🕊️`);
   lines.push('');
 
   if (photoFiles.profile) {

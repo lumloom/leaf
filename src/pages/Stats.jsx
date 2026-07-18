@@ -3,9 +3,11 @@ import { useStore } from '../hooks/useStore.js';
 import { daysWith } from '../data/plantUtils.js';
 import RecipeCard from '../components/RecipeCard.jsx';
 import { soilRecipes as recipesRepo } from '../data/db.js';
+import { appConfirm } from '../components/dialog.js';
 
 export default function Stats() {
-  const { plants, events, soilRecipes } = useStore();
+  const { plants: allPlants, events, soilRecipes } = useStore();
+  const plants = allPlants.filter((p) => !p.archived);
 
   const now = new Date();
   const monthPrefix = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
@@ -79,7 +81,7 @@ export default function Stats() {
       ) : (
         <div style={{ display: 'grid', gap: 10 }}>
           {ratedRecipes.map((r) => {
-            const plant = plants.find((p) => p.id === r.plantId);
+            const plant = allPlants.find((p) => p.id === r.plantId);
             return (
               <div key={r.id}>
                 <RecipeCard
@@ -93,8 +95,9 @@ export default function Stats() {
                       '🪴 흙 레시피'
                     )
                   }
-                  onDelete={() => {
-                    if (confirm('이 레시피를 삭제할까요?')) recipesRepo.remove(r.id);
+                  onDelete={async () => {
+                    if (await appConfirm('이 레시피를 삭제할까요?', { confirmLabel: '삭제', danger: true }))
+                      recipesRepo.remove(r.id);
                   }}
                 />
               </div>
