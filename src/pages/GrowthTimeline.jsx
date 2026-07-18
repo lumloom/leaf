@@ -48,12 +48,12 @@ export default function GrowthTimeline() {
                     key={ev.id}
                     to={`/plants/${plant.id}`}
                     className="card"
-                    style={{ display: 'flex', gap: 10, alignItems: 'center', padding: 12 }}
+                    style={{ display: 'flex', gap: 12, alignItems: 'center' }}
                   >
                     <PhotoImg
                       photoId={plant.photoId}
                       alt={plant.name}
-                      style={{ width: 40, height: 40, borderRadius: 12, flexShrink: 0 }}
+                      style={{ width: 56, height: 56, borderRadius: 16, flexShrink: 0 }}
                     />
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div>
@@ -63,20 +63,19 @@ export default function GrowthTimeline() {
                           / {meta.icon} {meta.label}
                         </span>
                       </div>
-                      {ev.text && (
-                        <div
-                          className="muted"
-                          style={{ marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
-                        >
-                          {ev.text}
-                        </div>
-                      )}
+                      {/* 텍스트가 없어도 줄 높이를 유지해 카드 높이를 일정하게 만든다 */}
+                      <div
+                        className="muted"
+                        style={{ marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
+                      >
+                        {ev.text || ' '}
+                      </div>
                     </div>
                     {ev.photoIds?.length > 0 && (
                       <PhotoImg
                         photoId={ev.photoIds[0]}
                         alt=""
-                        style={{ width: 40, height: 40, borderRadius: 10, flexShrink: 0 }}
+                        style={{ width: 56, height: 56, borderRadius: 14, flexShrink: 0 }}
                       />
                     )}
                   </Link>
