@@ -1,0 +1,302 @@
+/* Lumloom 브랜드 토큰 (lumloom-website와 동일 팔레트) + Leaf 확장 */
+:root {
+  --color-bg: #f7f5f1;
+  --color-surface: #ffffff;
+  --color-surface-alt: #ece9e1;
+  --color-accent: #7b8f77;
+  --color-accent-deep: #5f7360;
+  --color-olive: #8a9168;
+  --color-text: #2e2c28;
+  --color-text-secondary: #8a857c;
+  --color-border: #e6e2d8;
+  --color-danger: #b06a5d;
+  --color-star: #c9a86a;
+
+  --font-display: 'Gowun Batang', 'Nanum Myeongjo', serif;
+  --font-round: 'Gowun Dodum', 'Pretendard Variable', sans-serif;
+  --font-body: 'Pretendard Variable', 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --shadow-card: 0 1px 3px rgba(60, 55, 45, 0.06), 0 4px 16px rgba(60, 55, 45, 0.05);
+  --nav-height: 64px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.6;
+  letter-spacing: -0.01em;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ---------- 레이아웃 ---------- */
+.app-shell {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100dvh;
+  padding-bottom: calc(var(--nav-height) + env(safe-area-inset-bottom) + 16px);
+}
+
+.page {
+  padding: 24px 20px 8px;
+}
+
+.page-title {
+  font-family: var(--font-round);
+  font-size: 22px;
+  margin-bottom: 4px;
+}
+
+.page-sub {
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  margin-bottom: 20px;
+}
+
+.section-title {
+  font-family: var(--font-round);
+  font-size: 15px;
+  color: var(--color-accent-deep);
+  margin: 28px 0 12px;
+}
+
+/* ---------- 카드 ---------- */
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: 16px;
+}
+
+.card + .card {
+  margin-top: 12px;
+}
+
+/* ---------- 버튼 ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 12px 18px;
+  font-family: var(--font-round);
+  font-size: 15px;
+  cursor: pointer;
+  background: var(--color-surface-alt);
+  color: var(--color-text);
+  transition: opacity 0.15s;
+}
+
+.btn:active {
+  opacity: 0.75;
+}
+
+.btn-primary {
+  background: var(--color-accent);
+  color: #fff;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--color-text-secondary);
+}
+
+.btn-danger {
+  background: transparent;
+  color: var(--color-danger);
+  border: 1px solid var(--color-danger);
+}
+
+.btn-block {
+  width: 100%;
+}
+
+.btn-sm {
+  padding: 8px 12px;
+  font-size: 13px;
+  border-radius: 10px;
+}
+
+/* ---------- 폼 ---------- */
+.field {
+  margin-bottom: 16px;
+}
+
+.field label {
+  display: block;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  margin-bottom: 6px;
+  font-family: var(--font-round);
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  padding: 11px 14px;
+  outline: none;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  border-color: var(--color-accent);
+}
+
+.field textarea {
+  resize: vertical;
+  min-height: 84px;
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* 선택 칩 */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  border-radius: 999px;
+  padding: 7px 14px;
+  font-size: 13px;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+}
+
+.chip.selected {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #fff;
+}
+
+/* ---------- 하단 내비게이션 ---------- */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  height: calc(var(--nav-height) + env(safe-area-inset-bottom));
+  padding-bottom: env(safe-area-inset-bottom);
+  background: rgba(247, 245, 241, 0.92);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  z-index: 50;
+}
+
+.bottom-nav a {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  font-size: 11px;
+  font-family: var(--font-round);
+  color: var(--color-text-secondary);
+}
+
+.bottom-nav a.active {
+  color: var(--color-accent-deep);
+}
+
+.bottom-nav .nav-icon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+/* ---------- 별점 ---------- */
+.stars {
+  color: var(--color-star);
+  letter-spacing: 2px;
+  font-size: 15px;
+}
+
+.stars .dim {
+  opacity: 0.28;
+}
+
+/* ---------- 기타 ---------- */
+.badge {
+  display: inline-block;
+  background: var(--color-surface-alt);
+  color: var(--color-accent-deep);
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: 12px;
+  font-family: var(--font-round);
+}
+
+.badge-water {
+  background: #e3ecf0;
+  color: #5d7a8a;
+}
+
+.empty {
+  text-align: center;
+  color: var(--color-text-secondary);
+  padding: 48px 20px;
+  font-size: 14px;
+}
+
+.empty .empty-icon {
+  font-size: 36px;
+  margin-bottom: 12px;
+}
+
+.muted {
+  color: var(--color-text-secondary);
+  font-size: 13px;
+}
+
+.brand-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+}
