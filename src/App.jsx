@@ -12,6 +12,7 @@ import Compare from './pages/Compare.jsx';
 import Passport from './pages/Passport.jsx';
 import Stats from './pages/Stats.jsx';
 import Memories from './pages/Memories.jsx';
+import GrowthTimeline from './pages/GrowthTimeline.jsx';
 import Settings from './pages/Settings.jsx';
 
 // HashRouter: GitHub Pages 정적 호스팅에서도 새로고침이 깨지지 않는다.
@@ -33,6 +34,7 @@ export default function App() {
           <Route path="/spaces/:id/edit" element={<SpaceForm />} />
           <Route path="/stats" element={<Stats />} />
           <Route path="/memories" element={<Memories />} />
+          <Route path="/timeline" element={<GrowthTimeline />} />
           <Route path="/settings" element={<Settings />} />
         </Routes>
         <BottomNav />

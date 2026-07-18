@@ -26,6 +26,9 @@ npm run build    # 프로덕션 빌드 (dist/)
 - **식물 여권** — 프로필 카드 (이름·생일·온 날·위치·화분·흙 레시피·최근 관리·성장 점수)
 - **통계** — 식물 수·최장 키운 기간·이번 달 새잎·올해 분갈이·평균 물주기(실제 기록 기반) + 흙 레시피 비교
 - **백업 / 복원** — 설정에서 식물별 .md(frontmatter + 위키링크, 옵시디언 호환) + 사진 + data.json + photo-manifest.json을 ZIP으로 다운로드하고, 그 ZIP으로 전체 복원 가능 (`src/data/exportMd.js`)
+- **성장기록** — 모든 식물의 기록을 날짜별(최근 우선)로 통합해 "식물명 / 기록종류"로 보여주는 정원 전체 타임라인 (`src/pages/GrowthTimeline.jsx`)
+- **추억보기** — 식물을 삭제하지 않고 보관(archived) — 죽거나 분양 보낸 식물도 기록을 그대로 간직
+- **iOS PWA 대응** — 홈 화면에 추가한 앱에서는 `window.confirm/alert`가 표시되지 않아 앱 자체 다이얼로그(`src/components/dialog.js`)로 대체
 
 ## 다음 단계 (기획서 기준)
 
@@ -43,7 +46,7 @@ src/
     seed.js      # 예시 데이터
   hooks/       # useStore (useSyncExternalStore)
   components/  # PlantCard, PhotoInput, PhotoImg, Stars, BottomNav
-  pages/       # Home, PlantForm, PlantDetail, LogForm, Spaces, SpaceForm, Settings
+  pages/       # Home, PlantForm, PlantDetail, LogForm, Spaces, SpaceForm, GrowthTimeline, Memories, Settings
   styles/      # theme.css — Lumloom 브랜드 토큰 (lumloom-website와 동일 팔레트)
 ```
 
