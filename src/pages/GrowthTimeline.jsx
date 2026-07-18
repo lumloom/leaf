@@ -39,7 +39,8 @@ export default function GrowthTimeline() {
             <div className="section-title" style={{ margin: '24px 0 8px' }}>
               {formatDate(date)}
             </div>
-            <div style={{ display: 'grid', gap: 8 }}>
+            {/* minmax(0,1fr): 긴 한 줄 텍스트가 카드 최소 너비를 키워 화면 밖으로 넘치지 않게 */}
+            <div style={{ display: 'grid', gap: 8, gridTemplateColumns: 'minmax(0, 1fr)' }}>
               {byDate[date].map((ev) => {
                 const plant = plantById[ev.plantId];
                 const meta = EVENT_TYPES[ev.type] ?? EVENT_TYPES.diary;
@@ -48,14 +49,14 @@ export default function GrowthTimeline() {
                     key={ev.id}
                     to={`/plants/${plant.id}`}
                     className="card"
-                    style={{ display: 'flex', gap: 12, alignItems: 'center' }}
+                    style={{ display: 'flex', gap: 12, alignItems: 'center', minWidth: 0, overflow: 'hidden' }}
                   >
                     <PhotoImg
                       photoId={plant.photoId}
                       alt={plant.name}
                       style={{ width: 56, height: 56, borderRadius: 16, flexShrink: 0 }}
                     />
-                    <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
                       <div>
                         <span style={{ fontFamily: 'var(--font-round)' }}>{plant.name}</span>
                         <span className="muted">
