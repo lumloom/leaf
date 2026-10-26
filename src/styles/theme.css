@@ -152,6 +152,12 @@ a {
 
 .account-sync-summary strong { font-size: 18px; }
 .account-sync-summary span { color: var(--color-text-secondary); font-size: 11px; }
+.account-password-settings { padding-top: 12px; border-top: 1px solid var(--color-border); }
+.account-password-settings summary { cursor: pointer; color: var(--color-text-secondary); font-size: 12px; font-weight: 600; }
+.account-password-settings form { margin-top: 10px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: end; }
+.account-password-settings label { display: grid; gap: 5px; color: var(--color-text-secondary); font-size: 12px; }
+.account-password-settings input { min-height: 44px; padding: 10px 12px; border: 1px solid var(--color-border); border-radius: 12px; background: var(--color-surface); }
+.account-password-settings small { display: block; margin-top: 7px; }
 .account-sync-actions { align-items: stretch; }
 .account-sync-actions .btn { flex: 1; }
 

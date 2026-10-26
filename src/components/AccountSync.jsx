@@ -6,6 +6,7 @@ import {
   runSync,
   signOut,
   subscribeSync,
+  updatePassword,
 } from '../data/sync.js';
 
 const typeLabel = {
@@ -18,10 +19,17 @@ const typeLabel = {
 export default function AccountSync() {
   const sync = useSyncExternalStore(subscribeSync, getSyncSnapshot);
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
 
   async function login(event) {
     event.preventDefault();
-    if (await requestLogin(email.trim())) setEmail('');
+    if (await requestLogin(email.trim(), password)) setPassword('');
+  }
+
+  async function savePassword(event) {
+    event.preventDefault();
+    if (await updatePassword(newPassword)) setNewPassword('');
   }
 
   return (
@@ -51,10 +59,14 @@ export default function AccountSync() {
               placeholder="name@example.com"
             />
           </label>
+          <label>
+            <span>비밀번호</span>
+            <input type="password" autoComplete="current-password" minLength="8" required value={password} onChange={(event) => setPassword(event.target.value)} placeholder="8자 이상" />
+          </label>
           <button className="btn btn-primary" disabled={sync.busy}>
-            {sync.busy ? '보내는 중…' : '로그인 링크 받기'}
+            {sync.busy ? '로그인 중…' : '로그인'}
           </button>
-          <small className="muted">메일함에서 가장 최근 Lumloom 로그인 링크를 눌러주세요.</small>
+          <small className="muted">같은 Lumloom 이메일과 비밀번호를 네 기기에서 사용해요.</small>
         </form>
       ) : (
         <div className="account-sync-session">
@@ -74,6 +86,14 @@ export default function AccountSync() {
               {!sync.localCount ? '올릴 기록 없음' : sync.pendingCount ? '기존 기록 올리기' : '모두 업로드됨'}
             </button>
           </div>
+          <details className="account-password-settings">
+            <summary>비밀번호 설정·변경</summary>
+            <form onSubmit={savePassword}>
+              <label><span>새 비밀번호</span><input type="password" autoComplete="new-password" minLength="8" required value={newPassword} onChange={(event) => setNewPassword(event.target.value)} placeholder="8자 이상" /></label>
+              <button className="btn" type="submit" disabled={sync.busy}>저장</button>
+            </form>
+            <small className="muted">한 앱에서 설정한 비밀번호를 모든 Lumloom 앱에서 사용해요.</small>
+          </details>
           {sync.conflicts.map((conflict) => {
             const [entityType] = conflict.key.split(':');
             return (
