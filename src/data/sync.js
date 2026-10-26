@@ -119,6 +119,12 @@ function setMessage(next, error = false) {
   void emit();
 }
 
+function syncErrorText(error) {
+  const detail = error?.message || error?.details || error?.error_description;
+  const code = error?.code ? ` (${error.code})` : '';
+  return detail ? `${detail}${code}` : '잠시 후 다시 시도해주세요.';
+}
+
 async function fetchRemote() {
   const { data, error } = await supabase.from('lumloom_records').select('*').eq('app', APP);
   if (error) throw error;
@@ -222,7 +228,7 @@ export async function runSync(includeUntracked = false) {
       : `동기화 완료 · ${new Intl.DateTimeFormat('ko-KR', { hour: 'numeric', minute: '2-digit' }).format(new Date())}`);
   } catch (error) {
     console.error('Leaf sync failed', error);
-    setMessage(`동기화하지 못했어요. ${error instanceof Error ? error.message : '잠시 후 다시 시도해주세요.'}`, true);
+    setMessage(`동기화하지 못했어요. ${syncErrorText(error)}`, true);
   } finally {
     busy = false;
     await emit();
