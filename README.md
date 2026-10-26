@@ -33,7 +33,7 @@ npm run deploy   # 빌드 후 GitHub Pages(gh-pages 브랜치)에 배포
 - **성장기록** — 모든 식물의 기록을 날짜별(최근 우선)로 통합해 "식물명 / 기록종류"로 보여주는 정원 전체 타임라인 (`src/pages/GrowthTimeline.jsx`)
 - **추억보기** — 식물을 삭제하지 않고 보관(archived) — 죽거나 분양 보낸 식물도 기록을 그대로 간직
 - **iOS PWA 대응** — 홈 화면에 추가한 앱에서는 `window.confirm/alert`가 표시되지 않아 앱 자체 다이얼로그(`src/components/dialog.js`)로 대체
-- **Android 앱** — Capacitor 기반 네이티브 프로젝트와 API 36 빌드 지원, 앱에서는 ZIP 백업을 Android 공유·저장 창으로 내보냄
+- **계정 동기화** — Lumloom 공용 계정으로 로그인해 데스크탑·태블릿·모바일 브라우저의 기록과 사진을 Supabase로 동기화
 
 ## 다음 단계 (기획서 기준)
 
@@ -46,20 +46,13 @@ npm run deploy   # 빌드 후 GitHub Pages(gh-pages 브랜치)에 배포
 - `npm run deploy`를 실행하면 프로덕션 빌드가 생성되고 `gh-pages` 브랜치에 게시됩니다.
 - 배포 주소: [https://lumloom.github.io/leaf/](https://lumloom.github.io/leaf/)
 
-## Android
+## 웹앱 이용
 
-Android 앱은 Capacitor 8로 구성되어 있으며 `com.lumloom.leaf` 패키지와 Android API 36을 사용합니다.
-
-```bash
-npm run android:sync  # 웹 빌드 후 Android 프로젝트에 동기화
-npm run android:open  # Android Studio에서 프로젝트 열기
-```
-
-- Debug APK: Android Studio 또는 Windows에서 `cd android` 후 `.\gradlew.bat assembleDebug`로 생성
-- Google Play: Android Studio에서 업로드 키로 서명한 Release AAB 생성. 키와 비밀번호는 저장소에 커밋하지 않습니다.
+- 설치 파일 없이 [Leaf 웹앱](https://lumloom.github.io/leaf/)을 데스크탑·아이패드·아이폰·Android 브라우저에서 사용합니다.
+- 모바일에서는 브라우저의 **홈 화면에 추가** 기능으로 앱처럼 열 수 있습니다.
+- 기록은 먼저 현재 브라우저에 저장됩니다. Lumloom 계정으로 로그인하고 동기화하면 다른 기기에서도 같은 기록을 이어서 사용할 수 있습니다.
+- 별도 보관이나 Obsidian 이동이 필요할 때는 설정에서 ZIP 백업을 내려받습니다.
 - 개인정보 처리 안내: [https://lumloom.github.io/leaf/privacy.html](https://lumloom.github.io/leaf/privacy.html)
-
-앱을 삭제하면 기기에 저장된 식물 정보와 사진도 삭제됩니다. 기기 변경이나 앱 삭제 전에는 설정에서 ZIP 백업을 만들어 주세요.
 
 ## 구조
 

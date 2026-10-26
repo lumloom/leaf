@@ -1,9 +1,6 @@
 // 옵시디언 백업: 식물마다 .md 파일 하나 + 사진(jpg) + 원본 data.json을 ZIP으로 묶어 다운로드한다.
 
 import JSZip from 'jszip';
-import { Capacitor } from '@capacitor/core';
-import { Directory, Filesystem } from '@capacitor/filesystem';
-import { Share } from '@capacitor/share';
 import { getState, replaceState } from './db.js';
 import { getPhotoBlob, putPhotoBlob, clearPhotos } from './photoStore.js';
 import { EVENT_TYPES, lightLabel, airflowLabel, humidityLabel } from './labels.js';
@@ -258,30 +255,7 @@ export async function importBackupZip(file) {
   return { plants: state.plants.length, spaces: state.spaces.length, events: state.events.length };
 }
 
-const blobToBase64 = (blob) =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onerror = () => reject(reader.error ?? new Error('파일을 읽지 못했어요'));
-    reader.onload = () => resolve(String(reader.result).split(',')[1]);
-    reader.readAsDataURL(blob);
-  });
-
-export async function downloadBlob(blob, filename) {
-  if (Capacitor.isNativePlatform()) {
-    const saved = await Filesystem.writeFile({
-      path: filename,
-      data: await blobToBase64(blob),
-      directory: Directory.Cache,
-    });
-    await Share.share({
-      title: 'Lumloom Leaf 백업',
-      text: '식물과 성장 기록 백업 파일',
-      files: [saved.uri],
-      dialogTitle: '백업 파일 저장 또는 공유',
-    });
-    return;
-  }
-
+export function downloadBlob(blob, filename) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
