@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { HashRouter, Routes, Route } from 'react-router-dom';
 import BottomNav from './components/BottomNav.jsx';
 import DialogHost from './components/DialogHost.jsx';
@@ -14,9 +15,14 @@ import Stats from './pages/Stats.jsx';
 import Memories from './pages/Memories.jsx';
 import GrowthTimeline from './pages/GrowthTimeline.jsx';
 import Settings from './pages/Settings.jsx';
+import { startSync } from './data/sync.js';
 
 // HashRouter: GitHub Pages 정적 호스팅에서도 새로고침이 깨지지 않는다.
 export default function App() {
+  useEffect(() => {
+    startSync();
+  }, []);
+
   return (
     <HashRouter>
       <div className="app-shell">

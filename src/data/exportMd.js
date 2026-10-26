@@ -1,6 +1,9 @@
 // 옵시디언 백업: 식물마다 .md 파일 하나 + 사진(jpg) + 원본 data.json을 ZIP으로 묶어 다운로드한다.
 
 import JSZip from 'jszip';
+import { Capacitor } from '@capacitor/core';
+import { Directory, Filesystem } from '@capacitor/filesystem';
+import { Share } from '@capacitor/share';
 import { getState, replaceState } from './db.js';
 import { getPhotoBlob, putPhotoBlob, clearPhotos } from './photoStore.js';
 import { EVENT_TYPES, lightLabel, airflowLabel, humidityLabel } from './labels.js';
@@ -10,9 +13,33 @@ const starsText = (n) => (n ? '★'.repeat(n) + '☆'.repeat(5 - n) : '평가 �
 
 // 파일명으로 못 쓰는 문자 제거
 const safeName = (name) => name.replace(/[\\/:*?"<>|#^[\]]/g, '').trim() || '이름없음';
+const yamlString = (value) => JSON.stringify(String(value ?? ''));
+const yamlList = (values) => JSON.stringify([...new Set(values.filter(Boolean))]);
+const datePart = (value) => String(value || '').slice(0, 10);
+const timestamp = (date, value) => value || `${date}T00:00:00+09:00`;
+const obsidianTimestamp = () => new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z');
 
 function spaceMd(spaces, plants) {
-  const lines = ['---', 'type: lumloom-spaces', 'tags: [lumloom-leaf]', '---', '', '# 🏠 우리집 공간', ''];
+  const exportedAt = new Date().toISOString();
+  const date = datePart(exportedAt);
+  const lines = [
+    '---',
+    'lumloom_id: leaf-spaces',
+    'schema: lumloom-record/v1',
+    'source: leaf',
+    'record_type: spaces',
+    `title: ${yamlString('우리집 공간')}`,
+    `date: ${date}`,
+    `created_at: ${yamlString(exportedAt)}`,
+    `updated_at: ${yamlString(exportedAt)}`,
+    'status: active',
+    `tags: ${yamlList(['lumloom', 'leaf', 'spaces'])}`,
+    'people: []',
+    `projects: ${yamlList(['[[Lumloom]]'])}`,
+    'related: []',
+    'published: false',
+    '---', '', '# 🏠 우리집 공간', ''
+  ];
   spaces.forEach((s) => {
     lines.push(`## ${s.name}`, '');
     if (s.direction && s.direction !== '해당 없음') lines.push(`- 방향: ${s.direction}`);
@@ -28,15 +55,29 @@ function spaceMd(spaces, plants) {
 }
 
 function plantMd(plant, { space, recipes, timeline, photoFiles }) {
+  const date = plant.acquiredAt || datePart(plant.createdAt || plant.updatedAt) || datePart(new Date().toISOString());
+  const related = date ? [`[[${date}]]`] : [];
   const lines = [
     '---',
-    'type: plant',
-    `name: ${plant.name}`,
-    plant.species ? `species: ${plant.species}` : null,
-    space ? `location: ${space.name}` : null,
+    `lumloom_id: leaf-plant-${plant.id}`,
+    'schema: lumloom-record/v1',
+    'source: leaf',
+    'record_type: plant',
+    `title: ${yamlString(plant.name)}`,
+    `date: ${date}`,
+    `created_at: ${yamlString(timestamp(date, plant.createdAt))}`,
+    `updated_at: ${yamlString(timestamp(date, plant.updatedAt || plant.createdAt))}`,
+    `status: ${plant.archived ? 'archived' : 'active'}`,
+    `tags: ${yamlList(['lumloom', 'leaf', 'plant'])}`,
+    'people: []',
+    `projects: ${yamlList(['[[Lumloom]]'])}`,
+    `related: ${yamlList(related)}`,
+    'published: false',
+    `plant_name: ${yamlString(plant.name)}`,
+    plant.species ? `species: ${yamlString(plant.species)}` : null,
+    space ? `location: ${yamlString(space.name)}` : null,
     plant.acquiredAt ? `acquired: ${plant.acquiredAt}` : null,
     plant.birthday ? `birthday: ${plant.birthday}` : null,
-    'tags: [lumloom-leaf, plant]',
     '---',
     '',
     `# 🌿 ${plant.name}`,
@@ -73,7 +114,7 @@ function plantMd(plant, { space, recipes, timeline, photoFiles }) {
   lines.push('');
 
   if (photoFiles.profile) {
-    lines.push(`![[${photoFiles.profile}]]`, '');
+    lines.push(`![[Leaf/${photoFiles.profile}]]`, '');
   }
 
   if (recipes.length > 0) {
@@ -92,7 +133,7 @@ function plantMd(plant, { space, recipes, timeline, photoFiles }) {
       const meta = EVENT_TYPES[ev.type] ?? EVENT_TYPES.diary;
       lines.push(`### ${formatDate(ev.date)} — ${meta.icon} ${meta.label}`, '');
       if (ev.text) lines.push(ev.text, '');
-      (photoFiles.byEvent[ev.id] ?? []).forEach((f) => lines.push(`![[${f}]]`, ''));
+      (photoFiles.byEvent[ev.id] ?? []).forEach((f) => lines.push(`![[Leaf/${f}]]`, ''));
     });
   }
 
@@ -100,10 +141,39 @@ function plantMd(plant, { space, recipes, timeline, photoFiles }) {
   return lines.join('\n');
 }
 
+export function plantMarkdownForObsidian(plantId) {
+  const state = getState();
+  const plant = state.plants.find((item) => item.id === plantId);
+  if (!plant) throw new Error('식물을 찾을 수 없어요.');
+  const space = state.spaces.find((item) => item.id === plant.spaceId);
+  const recipes = state.soilRecipes
+    .filter((item) => item.plantId === plant.id)
+    .sort((a, b) => (b.date ?? '').localeCompare(a.date ?? ''));
+  const timeline = state.events
+    .filter((item) => item.plantId === plant.id)
+    .sort((a, b) => a.date.localeCompare(b.date) || (a.createdAt ?? '').localeCompare(b.createdAt ?? ''));
+  return plantMd(plant, { space, recipes, timeline, photoFiles: { profile: null, byEvent: {} } });
+}
+
+export function obsidianUriForPlant(plantId) {
+  const state = getState();
+  const plant = state.plants.find((item) => item.id === plantId);
+  if (!plant) throw new Error('식물을 찾을 수 없어요.');
+  const file = `01. 수집함/Leaf/${safeName(plant.name)}-${obsidianTimestamp()}.md`;
+  const content = plantMarkdownForObsidian(plantId);
+  return `obsidian://new?vault=${encodeURIComponent('Lumloom')}&file=${encodeURIComponent(file)}&content=${encodeURIComponent(content)}`;
+}
+
+export function savePlantToObsidian(plantId) {
+  const uri = obsidianUriForPlant(plantId);
+  if (uri.length > 12000) throw new Error('기록이 길어 백업 다운로드를 이용해 주세요.');
+  window.location.href = uri;
+}
+
 export async function exportBackupZip() {
   const state = getState();
   const zip = new JSZip();
-  const photosDir = zip.folder('photos');
+  const photosDir = zip.folder('91. Attachments/Leaf');
   // 복원 시 photoId → ZIP 안 파일 경로를 되찾기 위한 매니페스트
   const photoManifest = {};
 
@@ -135,7 +205,7 @@ export async function exportBackupZip() {
       if (!blob) return null;
       const fname = `${fileBase}-${suffix}.jpg`;
       photosDir.file(fname, blob);
-      photoManifest[photoId] = `photos/${fname}`;
+      photoManifest[photoId] = `91. Attachments/Leaf/${fname}`;
       return fname;
     };
 
@@ -149,16 +219,16 @@ export async function exportBackupZip() {
       }
     }
 
-    zip.file(`${fileBase}.md`, plantMd(plant, { space, recipes, timeline, photoFiles }));
+    zip.file(`50. Leaf/식물/${fileBase}.md`, plantMd(plant, { space, recipes, timeline, photoFiles }));
   }
 
   if (state.spaces.length > 0) {
-    zip.file('우리집 공간.md', spaceMd(state.spaces, state.plants));
+    zip.file('50. Leaf/공간/우리집 공간.md', spaceMd(state.spaces, state.plants));
   }
 
   // 앱으로 다시 불러올 수 있는 원본 데이터 + 사진 매니페스트
-  zip.file('data.json', JSON.stringify(state, null, 2));
-  zip.file('photo-manifest.json', JSON.stringify(photoManifest, null, 2));
+  zip.file('50. Leaf/보관함/data.json', JSON.stringify(state, null, 2));
+  zip.file('50. Leaf/보관함/photo-manifest.json', JSON.stringify(photoManifest, null, 2));
 
   return zip.generateAsync({ type: 'blob' });
 }
@@ -167,7 +237,7 @@ export async function exportBackupZip() {
 export async function importBackupZip(file) {
   const zip = await JSZip.loadAsync(file);
 
-  const dataFile = zip.file('data.json');
+  const dataFile = zip.file('50. Leaf/보관함/data.json') || zip.file('data.json');
   if (!dataFile) throw new Error('백업 파일이 아니에요 (data.json 없음)');
   const state = JSON.parse(await dataFile.async('string'));
   if (!Array.isArray(state.plants) || !Array.isArray(state.spaces) || !Array.isArray(state.events)) {
@@ -175,7 +245,7 @@ export async function importBackupZip(file) {
   }
 
   await clearPhotos();
-  const manifestFile = zip.file('photo-manifest.json');
+  const manifestFile = zip.file('50. Leaf/보관함/photo-manifest.json') || zip.file('photo-manifest.json');
   if (manifestFile) {
     const manifest = JSON.parse(await manifestFile.async('string'));
     for (const [photoId, path] of Object.entries(manifest)) {
@@ -188,7 +258,30 @@ export async function importBackupZip(file) {
   return { plants: state.plants.length, spaces: state.spaces.length, events: state.events.length };
 }
 
-export function downloadBlob(blob, filename) {
+const blobToBase64 = (blob) =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(reader.error ?? new Error('파일을 읽지 못했어요'));
+    reader.onload = () => resolve(String(reader.result).split(',')[1]);
+    reader.readAsDataURL(blob);
+  });
+
+export async function downloadBlob(blob, filename) {
+  if (Capacitor.isNativePlatform()) {
+    const saved = await Filesystem.writeFile({
+      path: filename,
+      data: await blobToBase64(blob),
+      directory: Directory.Cache,
+    });
+    await Share.share({
+      title: 'Lumloom Leaf 백업',
+      text: '식물과 성장 기록 백업 파일',
+      files: [saved.uri],
+      dialogTitle: '백업 파일 저장 또는 공유',
+    });
+    return;
+  }
+
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;

@@ -5,6 +5,7 @@ import { exportBackupZip, importBackupZip, downloadBlob } from '../data/exportMd
 import { todayIso } from '../data/plantUtils.js';
 import { useStore } from '../hooks/useStore.js';
 import { appConfirm, appAlert } from '../components/dialog.js';
+import AccountSync from '../components/AccountSync.jsx';
 
 export default function Settings() {
   const { plants, spaces, events } = useStore();
@@ -16,7 +17,7 @@ export default function Settings() {
     setExporting(true);
     try {
       const blob = await exportBackupZip();
-      downloadBlob(blob, `lumloom-leaf-backup-${todayIso()}.zip`);
+      await downloadBlob(blob, `lumloom-leaf-backup-${todayIso()}.zip`);
     } catch (err) {
       await appAlert(`백업을 만들지 못했어요: ${err.message}`);
     } finally {
@@ -60,13 +61,15 @@ export default function Settings() {
       <h1 className="page-title">⚙️ 설정</h1>
       <p className="page-sub">Lumloom Leaf</p>
 
+      <AccountSync />
+
       <div className="card">
         <div style={{ fontFamily: 'var(--font-round)', marginBottom: 8 }}>지금까지의 기록</div>
         <div className="muted">
           식물 {plants.length}개 · 공간 {spaces.length}곳 · 기록 {events.length}개
         </div>
         <div className="muted" style={{ marginTop: 4 }}>
-          모든 데이터는 이 기기 안에만 저장돼요.
+          기본 저장은 이 기기에서 이루어지며, Lumloom 계정에 로그인하면 기기 사이에서 동기화할 수 있어요.
         </div>
       </div>
 
@@ -95,6 +98,17 @@ export default function Settings() {
         <button className="btn btn-danger" onClick={handleReset}>
           모든 데이터 비우기
         </button>
+      </div>
+
+      <div className="card">
+        <div style={{ fontFamily: 'var(--font-round)', marginBottom: 8 }}>데이터와 개인정보</div>
+        <div className="muted" style={{ marginBottom: 10 }}>
+          로그인하지 않은 기록은 이 기기에만 저장됩니다. 계정 동기화를 사용해도 별도의 ZIP 백업을 함께 보관하면
+          더 안전해요.
+        </div>
+        <a className="btn" href="./privacy.html" target="_blank" rel="noreferrer">
+          개인정보 처리 안내
+        </a>
       </div>
 
       <p className="muted brand-title" style={{ textAlign: 'center', marginTop: 32 }}>

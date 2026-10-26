@@ -2,10 +2,11 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useStore } from '../hooks/useStore.js';
 import { plants, events as eventsRepo, soilRecipes } from '../data/db.js';
 import RecipeCard from '../components/RecipeCard.jsx';
-import { appConfirm } from '../components/dialog.js';
+import { appAlert, appConfirm } from '../components/dialog.js';
 import { EVENT_TYPES, lightLabel, airflowLabel, humidityLabel } from '../data/labels.js';
 import { formatDate, daysWith, wateringDday, todayIso } from '../data/plantUtils.js';
 import PhotoImg from '../components/PhotoImg.jsx';
+import { savePlantToObsidian } from '../data/exportMd.js';
 
 // 퀵 기록 버튼으로 바로 남기는 관리 기록
 const QUICK_ACTIONS = ['water', 'fertilizer', 'newleaf'];
@@ -68,6 +69,14 @@ export default function PlantDetail() {
     }
   }
 
+  async function handleObsidianSave() {
+    try {
+      savePlantToObsidian(plant.id);
+    } catch (err) {
+      await appAlert(err.message || 'Obsidian으로 보내지 못했어요.');
+    }
+  }
+
   return (
     <div className="page">
       <button className="btn btn-ghost btn-sm" onClick={() => navigate(-1)}>
@@ -125,6 +134,9 @@ export default function PlantDetail() {
         </div>
         <button className="btn btn-ghost btn-sm" style={{ marginTop: 10 }} onClick={() => navigate(`/plants/${plant.id}/edit`)}>
           정보 수정
+        </button>
+        <button className="btn btn-sm" style={{ marginTop: 10, marginLeft: 8 }} onClick={handleObsidianSave}>
+          Obsidian에 저장
         </button>
       </div>
 

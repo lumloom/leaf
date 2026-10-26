@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Lumloom Leaf</string>
+    <string name="title_activity_main">Lumloom Leaf</string>
+    <string name="package_name">com.lumloom.leaf</string>
+    <string name="custom_url_scheme">com.lumloom.leaf</string>
+</resources>

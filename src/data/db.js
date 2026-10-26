@@ -29,9 +29,14 @@ function persist() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 }
 
-function emit() {
+function notifySync(entityType, entityId, action) {
+  window.dispatchEvent(new CustomEvent('lumloom:entity-changed', { detail: { entityType, entityId, action } }));
+}
+
+function emit(change = null) {
   persist();
   listeners.forEach((fn) => fn());
+  if (change) notifySync(change.entityType, change.entityId, change.action);
 }
 
 export function subscribe(fn) {
@@ -51,46 +56,52 @@ function touch(record) {
   return { ...record, updatedAt: new Date().toISOString() };
 }
 
-function upsert(collection, record) {
+function upsert(collection, record, notify = true, updateTimestamp = true) {
   const now = new Date().toISOString();
   const items = state[collection];
   const idx = items.findIndex((r) => r.id === record.id);
   let saved;
   if (idx >= 0) {
-    saved = touch({ ...items[idx], ...record });
+    saved = updateTimestamp ? touch({ ...items[idx], ...record }) : { ...items[idx], ...record };
     state = { ...state, [collection]: items.map((r, i) => (i === idx ? saved : r)) };
   } else {
     saved = { createdAt: now, updatedAt: now, ...record, id: record.id ?? newId() };
     state = { ...state, [collection]: [...items, saved] };
   }
-  emit();
+  emit(notify ? { entityType: collection, entityId: saved.id, action: 'upsert' } : null);
   return saved;
 }
 
-function remove(collection, id) {
+function remove(collection, id, notify = true) {
   state = { ...state, [collection]: state[collection].filter((r) => r.id !== id) };
-  emit();
+  emit(notify ? { entityType: collection, entityId: id, action: 'delete' } : null);
 }
 
 export const spaces = {
   all: () => state.spaces,
   get: (id) => state.spaces.find((s) => s.id === id),
-  save: (space) => upsert('spaces', space),
-  remove: (id) => remove('spaces', id),
+  save: (space, notify = true) => upsert('spaces', space, notify),
+  remove: (id, notify = true) => remove('spaces', id, notify),
 };
 
 export const plants = {
   all: () => state.plants,
   get: (id) => state.plants.find((p) => p.id === id),
-  save: (plant) => upsert('plants', plant),
-  remove: (id) => {
+  save: (plant, notify = true) => upsert('plants', plant, notify),
+  remove: (id, notify = true) => {
+    const removedEvents = state.events.filter((event) => event.plantId === id).map((event) => event.id);
+    const removedRecipes = state.soilRecipes.filter((recipe) => recipe.plantId === id).map((recipe) => recipe.id);
     state = {
       ...state,
       plants: state.plants.filter((p) => p.id !== id),
       events: state.events.filter((e) => e.plantId !== id),
       soilRecipes: state.soilRecipes.filter((r) => r.plantId !== id),
     };
-    emit();
+    emit(notify ? { entityType: 'plants', entityId: id, action: 'delete' } : null);
+    if (notify) {
+      removedEvents.forEach((entityId) => notifySync('events', entityId, 'delete'));
+      removedRecipes.forEach((entityId) => notifySync('soilRecipes', entityId, 'delete'));
+    }
   },
 };
 
@@ -102,8 +113,8 @@ export const soilRecipes = {
     state.soilRecipes
       .filter((r) => r.plantId === plantId)
       .sort((a, b) => (b.date ?? '').localeCompare(a.date ?? '') || b.createdAt.localeCompare(a.createdAt)),
-  save: (recipe) => upsert('soilRecipes', recipe),
-  remove: (id) => remove('soilRecipes', id),
+  save: (recipe, notify = true) => upsert('soilRecipes', recipe, notify),
+  remove: (id, notify = true) => remove('soilRecipes', id, notify),
 };
 
 export const events = {
@@ -112,8 +123,8 @@ export const events = {
     state.events
       .filter((e) => e.plantId === plantId)
       .sort((a, b) => b.date.localeCompare(a.date) || b.createdAt.localeCompare(a.createdAt)),
-  save: (event) => upsert('events', event),
-  remove: (id) => remove('events', id),
+  save: (event, notify = true) => upsert('events', event, notify),
+  remove: (id, notify = true) => remove('events', id, notify),
 };
 
 export function markSeeded() {
@@ -126,12 +137,27 @@ export function isSeeded() {
 }
 
 export function resetAll() {
+  const removed = ['spaces', 'plants', 'events', 'soilRecipes'].flatMap((entityType) => state[entityType].map(({ id }) => ({ entityType, id })));
   state = { ...emptyState(), meta: { seeded: true } };
   emit();
+  removed.forEach(({ entityType, id }) => notifySync(entityType, id, 'delete'));
 }
 
 // 백업 복원: 전체 상태를 통째로 교체 (없는 컬렉션은 빈 배열로 채움)
 export function replaceState(next) {
+  const previous = state;
   state = { ...emptyState(), ...next, meta: { ...(next.meta ?? {}), seeded: true } };
   emit();
+  ['spaces', 'plants', 'events', 'soilRecipes'].forEach((entityType) => {
+    const nextIds = new Set(state[entityType].map(({ id }) => id));
+    previous[entityType].filter(({ id }) => !nextIds.has(id)).forEach(({ id }) => notifySync(entityType, id, 'delete'));
+    state[entityType].forEach(({ id }) => notifySync(entityType, id, 'upsert'));
+  });
+}
+
+export function applyRemoteEntity(entityType, entityId, payload, status) {
+  if (!['spaces', 'plants', 'events', 'soilRecipes'].includes(entityType)) return false;
+  if (status === 'deleted') remove(entityType, entityId, false);
+  else upsert(entityType, { ...payload, id: entityId }, false, false);
+  return true;
 }

@@ -59,6 +59,119 @@ a {
   text-decoration: none;
 }
 
+/* ---------- Lumloom 계정 / 동기화 ---------- */
+.account-sync-card {
+  border-color: rgba(123, 143, 119, 0.35);
+}
+
+.account-sync-heading,
+.account-sync-email,
+.account-sync-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.account-sync-heading {
+  justify-content: space-between;
+}
+
+.account-sync-heading h2 {
+  font-family: var(--font-round);
+  font-size: 18px;
+  margin-top: 2px;
+}
+
+.account-sync-kicker {
+  color: var(--color-accent-deep);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.account-sync-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-text-secondary);
+  box-shadow: 0 0 0 5px var(--color-surface-alt);
+}
+
+.account-sync-dot.online { background: var(--color-accent-deep); }
+.account-sync-lead { margin: 12px 0 16px; }
+
+.account-sync-login,
+.account-sync-session {
+  display: grid;
+  gap: 12px;
+}
+
+.account-sync-login label {
+  display: grid;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+.account-sync-login input {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  outline: none;
+}
+
+.account-sync-login input:focus { border-color: var(--color-accent); }
+.account-sync-email { flex-wrap: wrap; }
+.account-sync-email strong { flex: 1 1 180px; }
+
+.account-sync-text-button,
+.account-sync-conflict button {
+  border: 0;
+  background: transparent;
+  color: var(--color-accent-deep);
+  cursor: pointer;
+}
+
+.account-sync-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.account-sync-summary div {
+  display: grid;
+  gap: 2px;
+  padding: 12px 8px;
+  text-align: center;
+  background: var(--color-surface-alt);
+  border-radius: 12px;
+}
+
+.account-sync-summary strong { font-size: 18px; }
+.account-sync-summary span { color: var(--color-text-secondary); font-size: 11px; }
+.account-sync-actions { align-items: stretch; }
+.account-sync-actions .btn { flex: 1; }
+
+.account-sync-conflict {
+  display: grid;
+  gap: 5px;
+  padding: 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+.account-sync-conflict > div { display: flex; gap: 14px; }
+.account-sync-message { margin-top: 12px; font-size: 12px; color: var(--color-accent-deep); }
+.account-sync-message.error { color: var(--color-danger); }
+
+@media (max-width: 380px) {
+  .account-sync-actions { flex-direction: column; }
+}
+
 /* ---------- 레이아웃 ---------- */
 .app-shell {
   max-width: 480px;
