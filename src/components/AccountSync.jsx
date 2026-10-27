@@ -66,7 +66,7 @@ export default function AccountSync() {
           <button className="btn btn-primary" disabled={sync.busy}>
             {sync.busy ? '로그인 중…' : '로그인'}
           </button>
-          <small className="muted">같은 Lumloom 이메일과 비밀번호를 네 기기에서 사용해요.</small>
+          <small className="muted">같은 Lumloom 이메일과 비밀번호를 네 기기에서 사용해요. <a href="https://lumloom.github.io/account.html" target="_blank" rel="noreferrer">계정 만들기·비밀번호 찾기</a></small>
         </form>
       ) : (
         <div className="account-sync-session">
