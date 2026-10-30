@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useStore } from '../hooks/useStore.js';
 import { plants, events as eventsRepo, soilRecipes } from '../data/db.js';
@@ -7,9 +8,17 @@ import { EVENT_TYPES, lightLabel, airflowLabel, humidityLabel } from '../data/la
 import { formatDate, daysWith, wateringDday, todayIso } from '../data/plantUtils.js';
 import PhotoImg from '../components/PhotoImg.jsx';
 import { savePlantToObsidian } from '../data/exportMd.js';
+import {
+  beginObsidianHandoff,
+  cancelObsidianHandoff,
+  consumeObsidianSuccess,
+  OBSIDIAN_UNCONFIRMED_MESSAGE,
+  watchObsidianHandoff,
+} from '../data/obsidianHandoff.js';
 
 // 퀵 기록 버튼으로 바로 남기는 관리 기록
 const QUICK_ACTIONS = ['water', 'fertilizer', 'newleaf'];
+const OBSIDIAN_HANDOFF_KEY = 'lumloom-leaf-obsidian-handoff';
 
 export default function PlantDetail() {
   const { id } = useParams();
@@ -19,6 +28,10 @@ export default function PlantDetail() {
   const recipes = allRecipes
     .filter((r) => r.plantId === id)
     .sort((a, b) => (b.date ?? '').localeCompare(a.date ?? '') || (b.createdAt ?? '').localeCompare(a.createdAt ?? ''));
+
+  useEffect(() => {
+    if (consumeObsidianSuccess(OBSIDIAN_HANDOFF_KEY)) window.setTimeout(() => appAlert('Obsidian의 Lumloom 수집함에 저장했습니다.'), 0);
+  }, []);
 
   if (!plant) {
     return (
@@ -70,9 +83,12 @@ export default function PlantDetail() {
   }
 
   async function handleObsidianSave() {
+    const handoff = beginObsidianHandoff(OBSIDIAN_HANDOFF_KEY);
     try {
-      savePlantToObsidian(plant.id);
+      watchObsidianHandoff(OBSIDIAN_HANDOFF_KEY, handoff.token, () => appAlert(OBSIDIAN_UNCONFIRMED_MESSAGE));
+      savePlantToObsidian(plant.id, handoff.successUrl);
     } catch (err) {
+      cancelObsidianHandoff(OBSIDIAN_HANDOFF_KEY, handoff.token);
       await appAlert(err.message || 'Obsidian으로 보내지 못했어요.');
     }
   }

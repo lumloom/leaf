@@ -152,17 +152,18 @@ export function plantMarkdownForObsidian(plantId) {
   return plantMd(plant, { space, recipes, timeline, photoFiles: { profile: null, byEvent: {} } });
 }
 
-export function obsidianUriForPlant(plantId) {
+export function obsidianUriForPlant(plantId, successUrl) {
   const state = getState();
   const plant = state.plants.find((item) => item.id === plantId);
   if (!plant) throw new Error('식물을 찾을 수 없어요.');
   const file = `01. 수집함/Leaf/${safeName(plant.name)}-${obsidianTimestamp()}.md`;
   const content = plantMarkdownForObsidian(plantId);
-  return `obsidian://new?vault=${encodeURIComponent('Lumloom')}&file=${encodeURIComponent(file)}&content=${encodeURIComponent(content)}`;
+  const success = successUrl ? `&x-success=${encodeURIComponent(successUrl)}` : '';
+  return `obsidian://new?vault=${encodeURIComponent('Lumloom')}&file=${encodeURIComponent(file)}&content=${encodeURIComponent(content)}${success}`;
 }
 
-export function savePlantToObsidian(plantId) {
-  const uri = obsidianUriForPlant(plantId);
+export function savePlantToObsidian(plantId, successUrl) {
+  const uri = obsidianUriForPlant(plantId, successUrl);
   if (uri.length > 12000) throw new Error('기록이 길어 백업 다운로드를 이용해 주세요.');
   window.location.href = uri;
 }
