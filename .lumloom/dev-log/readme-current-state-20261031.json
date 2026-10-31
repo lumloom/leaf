@@ -1,0 +1,31 @@
+{
+  "schema_version": "lumloom-dev-log/v1",
+  "work_id": "readme-current-state-20261031",
+  "project_key": "leaf",
+  "title": "Leaf README 최신화",
+  "purpose": "현재 웹앱 배포 범위, 데이터 및 사진 저장, 계정 동기화, ZIP 백업과 Obsidian 직접 저장의 동작을 README에 반영합니다.",
+  "category": "Documentation",
+  "status": "Completed",
+  "completed_at": "2026-10-31T22:34:07+09:00",
+  "changes": [
+    "브라우저 데이터와 사진 저장소, 선택형 동기화, 충돌 선택을 설명했습니다.",
+    "lumloom-record/v1 ZIP 구조, 수집함 경로, 사진 제약, x-success 확인, Bridge 경계와 웹앱 전용 배포 상태를 문서화했습니다."
+  ],
+  "technical_changes": {
+    "files": ["README.md"]
+  },
+  "tests": [
+    {
+      "name": "README-to-code consistency audit",
+      "result": "passed",
+      "details": "README의 백업 구조, 저장 경로, 이미지 제약, 동기화와 웹 배포 설명을 현재 src 및 package.json에 대조했습니다."
+    },
+    {
+      "name": "git diff --check",
+      "result": "passed"
+    }
+  ],
+  "next_actions": [],
+  "related_commit_shas": ["23c9b8b", "57c5cac"],
+  "sensitive_data_review": "passed"
+}

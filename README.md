@@ -36,10 +36,22 @@ npm run deploy   # 빌드 후 GitHub Pages(gh-pages 브랜치)에 배포
 - **iOS PWA 대응** — 홈 화면에 추가한 앱에서는 `window.confirm/alert`가 표시되지 않아 앱 자체 다이얼로그(`src/components/dialog.js`)로 대체
 - **계정 동기화** — Lumloom 공용 계정으로 로그인해 데스크탑·태블릿·모바일 브라우저의 기록과 사진을 Supabase로 동기화
 
+## 저장, 백업, Obsidian
+
+- 식물·공간·타임라인·흙 레시피는 브라우저 저장소에, 사진 Blob은 IndexedDB에 저장합니다.
+- Lumloom 계정 동기화는 선택 사항입니다. 처음 로그인한 뒤 `기존 기록 올리기`로 현재 기기의 자료를 등록하며, 같은 기록이 양쪽에서 바뀌면 유지할 버전을 직접 선택합니다.
+- ZIP 백업은 `lumloom-record/v1` Markdown, `50. Leaf` 폴더 구조, `91. Attachments/Leaf` 사진, 복원용 `data.json`과 `photo-manifest.json`을 함께 보존합니다.
+- `Obsidian에 저장`은 현재 식물의 텍스트·레시피·타임라인을 `Lumloom` Vault의 `01. 수집함/Leaf`에 새 파일로 요청합니다.
+- 로컬 사진 Blob은 Obsidian URI에 포함할 수 없으므로 사진과 완전한 복원이 필요하면 설정의 ZIP 백업을 사용합니다.
+- 저장 요청에는 고유한 `x-success` 콜백을 붙입니다. 콜백이 없으면 Vault 부재, 외부 앱 URI 차단, 사용자 취소 등을 구분할 수 없어 확인 실패와 백업 대안을 안내합니다.
+- 수집함 이후 최종 폴더 분류는 별도의 Lumloom Bridge가 담당하며, 웹앱은 Vault 목록이나 로컬 경로를 검색하지 않습니다.
+
 ## 다음 단계 (기획서 기준)
 
 1. AI 사진 분석 (과습/햇빛 부족/병충해 추정) — 이벤트 스트림 구조라 기록 참조 답변에 바로 활용 가능
 2. 서비스 워커 오프라인 캐시
+
+Leaf는 현재 웹앱/PWA로만 배포합니다. Android 설치 패키지는 현재 배포 범위에 포함하지 않습니다.
 
 ## 배포
 
