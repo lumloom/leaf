@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useStore } from '../hooks/useStore.js';
 import { plants, events as eventsRepo, soilRecipes } from '../data/db.js';
@@ -12,7 +12,7 @@ import {
   beginObsidianHandoff,
   cancelObsidianHandoff,
   consumeObsidianSuccess,
-  OBSIDIAN_UNCONFIRMED_MESSAGE,
+  OBSIDIAN_RETURN_MESSAGE,
   watchObsidianHandoff,
 } from '../data/obsidianHandoff.js';
 
@@ -24,14 +24,21 @@ export default function PlantDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { plants: allPlants, spaces, events, soilRecipes: allRecipes } = useStore();
+  const [obsidianNotice, setObsidianNotice] = useState('');
   const plant = allPlants.find((p) => p.id === id);
   const recipes = allRecipes
     .filter((r) => r.plantId === id)
     .sort((a, b) => (b.date ?? '').localeCompare(a.date ?? '') || (b.createdAt ?? '').localeCompare(a.createdAt ?? ''));
 
   useEffect(() => {
-    if (consumeObsidianSuccess(OBSIDIAN_HANDOFF_KEY)) window.setTimeout(() => appAlert('Obsidian의 Lumloom 수집함에 저장했습니다.'), 0);
+    if (consumeObsidianSuccess(OBSIDIAN_HANDOFF_KEY)) setObsidianNotice('Obsidian의 Lumloom 수집함에 저장했습니다.');
   }, []);
+
+  useEffect(() => {
+    if (!obsidianNotice) return undefined;
+    const timer = window.setTimeout(() => setObsidianNotice(''), 6500);
+    return () => window.clearTimeout(timer);
+  }, [obsidianNotice]);
 
   if (!plant) {
     return (
@@ -85,7 +92,7 @@ export default function PlantDetail() {
   async function handleObsidianSave() {
     const handoff = beginObsidianHandoff(OBSIDIAN_HANDOFF_KEY);
     try {
-      watchObsidianHandoff(OBSIDIAN_HANDOFF_KEY, handoff.token, () => appAlert(OBSIDIAN_UNCONFIRMED_MESSAGE));
+      watchObsidianHandoff(OBSIDIAN_HANDOFF_KEY, handoff.token, () => setObsidianNotice(OBSIDIAN_RETURN_MESSAGE));
       savePlantToObsidian(plant.id, handoff.successUrl);
     } catch (err) {
       cancelObsidianHandoff(OBSIDIAN_HANDOFF_KEY, handoff.token);
@@ -95,6 +102,7 @@ export default function PlantDetail() {
 
   return (
     <div className="page">
+      {obsidianNotice && <div className="obsidian-notice" role="status" aria-live="polite">{obsidianNotice}</div>}
       <button className="btn btn-ghost btn-sm" onClick={() => navigate(-1)}>
         ‹ 뒤로
       </button>

@@ -30,7 +30,7 @@ npm run deploy   # 빌드 후 GitHub Pages(gh-pages 브랜치)에 배포
 - **식물 여권** — 프로필 카드 (이름·품종·온 날·위치·화분·흙 레시피·최근 관리·성장 점수)
 - **통계** — 식물 수·최장 키운 기간·이번 달 새잎·올해 분갈이·평균 물주기(실제 기록 기반) + 흙 레시피 비교
 - **백업 / 복원** — 설정에서 식물별 .md(frontmatter + 위키링크, 옵시디언 호환) + 사진 + data.json + photo-manifest.json을 ZIP으로 다운로드하고, 그 ZIP으로 전체 복원 가능 (`src/data/exportMd.js`)
-- **Obsidian 저장 확인** — 성공 콜백을 확인하고, 확인되지 않으면 `Lumloom` Vault 부재·이름 불일치 가능성과 백업 다운로드 대안을 안내
+- **Obsidian 저장 안내** — 성공 콜백이 돌아온 경우에만 완료를 알리고, 콜백 없이 앱으로 돌아오면 `Lumloom` Vault 수집함 확인을 안내
 - **성장기록** — 모든 식물의 기록을 날짜별(최근 우선)로 통합해 "식물명 / 기록종류"로 보여주는 정원 전체 타임라인 (`src/pages/GrowthTimeline.jsx`)
 - **추억보기** — 식물을 삭제하지 않고 보관(archived) — 죽거나 분양 보낸 식물도 기록을 그대로 간직
 - **iOS PWA 대응** — 홈 화면에 추가한 앱에서는 `window.confirm/alert`가 표시되지 않아 앱 자체 다이얼로그(`src/components/dialog.js`)로 대체
@@ -43,7 +43,7 @@ npm run deploy   # 빌드 후 GitHub Pages(gh-pages 브랜치)에 배포
 - ZIP 백업은 `lumloom-record/v1` Markdown, `50. Leaf` 폴더 구조, `91. Attachments/Leaf` 사진, 복원용 `data.json`과 `photo-manifest.json`을 함께 보존합니다.
 - `Obsidian에 저장`은 현재 식물의 텍스트·레시피·타임라인을 `Lumloom` Vault의 `01. 수집함/Leaf`에 새 파일로 요청합니다.
 - 로컬 사진 Blob은 Obsidian URI에 포함할 수 없으므로 사진과 완전한 복원이 필요하면 설정의 ZIP 백업을 사용합니다.
-- 저장 요청에는 고유한 `x-success` 콜백을 붙입니다. 콜백이 없으면 Vault 부재, 외부 앱 URI 차단, 사용자 취소 등을 구분할 수 없어 확인 실패와 백업 대안을 안내합니다.
+- 저장 요청에는 고유한 `x-success` 콜백을 붙입니다. 콜백 없이 앱으로 돌아오면 성공이나 실패로 단정하지 않고 `Lumloom` Vault의 `01. 수집함`과 Vault 이름을 확인하도록 몇 초 후 사라지는 상단 알림을 표시합니다.
 - 수집함 이후 최종 폴더 분류는 별도의 Lumloom Bridge가 담당하며, 웹앱은 Vault 목록이나 로컬 경로를 검색하지 않습니다.
 
 ## 다음 단계 (기획서 기준)
