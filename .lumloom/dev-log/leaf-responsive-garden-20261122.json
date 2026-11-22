@@ -1,0 +1,45 @@
+{
+  "schema_version": "lumloom-dev-log/v1",
+  "work_id": "leaf-responsive-garden-20261122",
+  "project_key": "leaf",
+  "title": "Leaf 반응형 가드닝 스튜디오 리디자인",
+  "purpose": "모바일 중심의 단일 열 화면을 데스크톱과 태블릿에서도 편안하게 사용할 수 있는 반응형 정원 대시보드로 확장하면서 기존 식물 기록, 동기화, 백업 및 Obsidian 계약을 유지합니다.",
+  "category": "UI/UX",
+  "status": "Completed",
+  "completed_at": "2026-11-22T17:35:56+09:00",
+  "changes": [
+    "정원 대시보드, 식물 검색 및 필터, 퀵 기록, 더보기 화면과 반응형 상단·하단 내비게이션을 추가했습니다.",
+    "식물 상세, 공간, 통계, 폼 화면을 넓은 화면에 맞게 재구성하고 접근성과 모션 감소 설정을 보완했습니다.",
+    "최근 성장 기록을 최신 5개의 날짜별 타임라인으로 표시하고 정원 홈 식물은 최근 기록 우선 최대 4개로 정리했습니다.",
+    "식물 탭 포토카드를 모바일 2열, 태블릿 3열, 데스크톱 5열로 조정했습니다.",
+    "페이지를 라우트 단위로 지연 로딩해 초기 JavaScript 번들 크기를 줄였습니다."
+  ],
+  "technical_changes": {
+    "files": [
+      "src/App.jsx",
+      "src/styles/theme.css",
+      "src/components/BottomNav.jsx",
+      "src/components/DesktopHeader.jsx",
+      "src/components/Icon.jsx",
+      "src/components/PlantCard.jsx",
+      "src/components/QuickLogModal.jsx",
+      "src/pages/Dashboard.jsx",
+      "src/pages/Plants.jsx",
+      "src/pages/More.jsx",
+      "src/pages/PlantDetail.jsx",
+      "src/pages/Spaces.jsx",
+      "src/pages/Stats.jsx",
+      "src/pages/GrowthTimeline.jsx"
+    ],
+    "modules": ["responsive application shell", "garden dashboard", "plant collection", "quick logging"],
+    "data_changes": ["없음: LocalStorage, IndexedDB, Supabase, Markdown, ZIP 및 Obsidian 데이터 계약을 유지했습니다."]
+  },
+  "tests": [
+    { "name": "npm.cmd run lint", "result": "passed" },
+    { "name": "npm.cmd run build", "result": "passed", "details": "Vite 프로덕션 빌드와 라우트 단위 청크 생성을 확인했습니다." },
+    { "name": "git diff --check", "result": "passed" },
+    { "name": "responsive browser review", "result": "passed", "details": "모바일과 데스크톱 대시보드, 식물 목록, 퀵 기록, 상세 및 타임라인을 확인했고 브라우저 오류와 가로 넘침이 없었습니다." }
+  ],
+  "next_actions": [],
+  "sensitive_data_review": "passed"
+}

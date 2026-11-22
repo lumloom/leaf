@@ -7,19 +7,15 @@ export default function PlantCard({ plant, space, events }) {
   const newLeaves = newLeafCountThisMonth(events, plant.id);
 
   return (
-    <Link to={`/plants/${plant.id}`} className="card" style={{ display: 'flex', gap: 14, alignItems: 'center' }}>
-      <PhotoImg
-        photoId={plant.photoId}
-        alt={plant.name}
-        style={{ width: 64, height: 64, borderRadius: 16, flexShrink: 0 }}
-      />
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontFamily: 'var(--font-round)', fontSize: 16 }}>{plant.name}</div>
-        <div className="muted" style={{ marginTop: 2 }}>
-          {space ? space.name : '위치 미지정'}
-          {plant.species ? ` · ${plant.species}` : ''}
+    <Link to={`/plants/${plant.id}`} className="plant-card">
+      <div className="plant-card-photo"><PhotoImg photoId={plant.photoId} alt={plant.name} /></div>
+      <div className="plant-card-copy">
+        <span className="plant-kicker">{space ? space.name : '위치 미지정'}</span>
+        <h3>{plant.name}</h3>
+        <div className="muted plant-species">
+          {plant.species || '함께 자라는 우리집 식물'}
         </div>
-        <div style={{ display: 'flex', gap: 6, marginTop: 8, flexWrap: 'wrap' }}>
+        <div className="plant-badges">
           {dday !== null && (
             <span className="badge badge-water">
               {dday < 0 ? `물주기 ${-dday}일 지남` : dday === 0 ? '오늘 물주기' : `물주기 D-${dday}`}
@@ -28,7 +24,6 @@ export default function PlantCard({ plant, space, events }) {
           {newLeaves > 0 && <span className="badge">🌱 새잎 +{newLeaves}</span>}
         </div>
       </div>
-      <span style={{ color: 'var(--color-text-secondary)' }}>›</span>
     </Link>
   );
 }

@@ -6,7 +6,7 @@ export default function Spaces() {
   const { spaces, plants } = useStore();
 
   return (
-    <div className="page">
+    <div className="page spaces-page">
       <h1 className="page-title">🏠 우리집 공간</h1>
       <p className="page-sub">공간의 빛과 바람을 기록해두면, 식물의 자리를 추천해드려요.</p>
 
@@ -18,10 +18,11 @@ export default function Spaces() {
           거실 창가, 베란다부터 등록해 볼까요?
         </div>
       ) : (
-        spaces.map((s) => {
+        <div className="space-grid">
+        {spaces.map((s) => {
           const residents = plants.filter((p) => p.spaceId === s.id);
           return (
-            <Link key={s.id} to={`/spaces/${s.id}/edit`} className="card" style={{ display: 'block' }}>
+            <Link key={s.id} to={`/spaces/${s.id}/edit`} className="card space-card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
                 <span style={{ fontFamily: 'var(--font-round)', fontSize: 16 }}>{s.name}</span>
                 {s.direction && s.direction !== '해당 없음' && <span className="badge">{s.direction}</span>}
@@ -47,7 +48,8 @@ export default function Spaces() {
               )}
             </Link>
           );
-        })
+        })}
+        </div>
       )}
 
       <Link to="/spaces/new" className="btn btn-primary btn-block" style={{ marginTop: 16 }}>
