@@ -22,7 +22,7 @@ export default function GrowthTimeline() {
   dates.forEach((d) => byDate[d].sort((a, b) => (b.createdAt ?? '').localeCompare(a.createdAt ?? '')));
 
   return (
-    <div className="page timeline-page">
+    <div className="page">
       <h1 className="page-title">📔 성장기록</h1>
       <p className="page-sub">우리집 정원이 함께 자라는 이야기예요.</p>
 

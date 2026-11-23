@@ -19,7 +19,7 @@ export default function LogForm() {
 
   if (!plant) {
     return (
-      <div className="page form-page">
+      <div className="page">
         <div className="empty">식물을 찾을 수 없어요.</div>
       </div>
     );
@@ -39,7 +39,7 @@ export default function LogForm() {
   }
 
   return (
-    <div className="page form-page">
+    <div className="page">
       <h1 className="page-title">{editing ? '기록 수정' : `${plant.name}의 기록`}</h1>
       <p className="page-sub">
         {editing ? '남겨둔 기록을 다듬어요.' : '오늘의 순간을 남겨두면, 시간이 지나 이야기가 돼요.'}

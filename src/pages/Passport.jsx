@@ -48,7 +48,7 @@ export default function Passport() {
   ].filter(Boolean);
 
   return (
-    <div className="page focused-page">
+    <div className="page">
       <button className="btn btn-ghost btn-sm" onClick={() => navigate(-1)}>
         ‹ 뒤로
       </button>

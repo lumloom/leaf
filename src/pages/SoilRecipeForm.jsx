@@ -48,7 +48,7 @@ export default function SoilRecipeForm() {
   }
 
   return (
-    <div className="page form-page">
+    <div className="page">
       <h1 className="page-title">{plant.name}의 흙 레시피</h1>
       <p className="page-sub">지금 쓰는 배합을 남겨두면, 어떤 흙이 잘 맞았는지 비교할 수 있어요.</p>
 

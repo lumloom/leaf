@@ -57,7 +57,7 @@ export default function Settings() {
   }
 
   return (
-    <div className="page settings-page">
+    <div className="page">
       <h1 className="page-title">⚙️ 설정</h1>
       <p className="page-sub">Lumloom Leaf</p>
 

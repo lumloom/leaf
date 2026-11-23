@@ -53,17 +53,17 @@ export default function Stats() {
   ].filter(Boolean);
 
   return (
-    <div className="page stats-page">
+    <div className="page">
       <h1 className="page-title">📊 우리집 정원의 시간</h1>
       <p className="page-sub">기록이 쌓일수록 이 화면이 더 풍성해져요.</p>
 
-      <div className="stats-grid">
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
         {tiles.map((t) => (
-          <div key={t.label} className="card stat-card">
-            <div className="muted stat-label">
+          <div key={t.label} className="card" style={{ padding: 14, margin: 0 }}>
+            <div className="muted" style={{ fontSize: 12, fontFamily: 'var(--font-round)' }}>
               {t.label}
             </div>
-            <div className="stat-value">
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: 24, color: 'var(--color-accent-deep)', marginTop: 4 }}>
               {t.value}
             </div>
           </div>

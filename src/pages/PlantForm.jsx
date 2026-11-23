@@ -49,7 +49,7 @@ export default function PlantForm() {
   }
 
   return (
-    <div className="page form-page">
+    <div className="page">
       <h1 className="page-title">{editing ? '식물 정보 수정' : '새 식물 맞이하기'}</h1>
       <p className="page-sub">우리집에 온 식물의 이야기를 시작해요.</p>
 

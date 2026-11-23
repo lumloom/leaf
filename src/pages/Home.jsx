@@ -13,9 +13,18 @@ export default function Home() {
     .filter((t) => t.dday !== null && t.dday <= 0);
 
   return (
-    <div className="page">
-      <h1 className="page-title">🌿 우리집 식물</h1>
-      <p className="page-sub">A place where plants grow, and memories grow with them.</p>
+    <div className="page home-page">
+      <header className="home-intro">
+        <div>
+          <h1 className="page-title">🌿 우리집 식물</h1>
+          <p className="page-sub">A place where plants grow, and memories grow with them.</p>
+        </div>
+        <img
+          className="home-pencil-illustration"
+          src="./leaf-garden-pencil.png"
+          alt="색연필로 그린 풀과 꽃, 화분"
+        />
+      </header>
 
       {plants.length === 0 ? (
         <div className="empty">
@@ -25,17 +34,21 @@ export default function Home() {
           첫 식물을 맞이해 볼까요?
         </div>
       ) : (
-        plants.map((p) => (
-          <PlantCard key={p.id} plant={p} space={spaces.find((s) => s.id === p.spaceId)} events={events} />
-        ))
+        <div className="home-plant-grid">
+          {plants.map((p) => (
+            <PlantCard key={p.id} plant={p} space={spaces.find((s) => s.id === p.spaceId)} events={events} />
+          ))}
+        </div>
       )}
 
-      <Link to="/plants/new" className="btn btn-primary btn-block" style={{ marginTop: 16 }}>
-        + 새 식물 맞이하기
-      </Link>
-      <Link to="/memories" className="btn btn-ghost btn-block" style={{ marginTop: 8 }}>
-        🕊️ 추억보기{memoriesCount > 0 ? ` (${memoriesCount})` : ''}
-      </Link>
+      <div className="home-actions">
+        <Link to="/plants/new" className="btn btn-primary btn-block">
+          + 새 식물 맞이하기
+        </Link>
+        <Link to="/memories" className="btn btn-ghost btn-block">
+          🕊️ 추억보기{memoriesCount > 0 ? ` (${memoriesCount})` : ''}
+        </Link>
+      </div>
 
       {todos.length > 0 && (
         <>

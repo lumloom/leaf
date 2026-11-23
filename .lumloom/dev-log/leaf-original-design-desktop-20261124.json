@@ -1,0 +1,54 @@
+{
+  "schema_version": "lumloom-dev-log/v1",
+  "work_id": "leaf-original-design-desktop-20261124",
+  "project_key": "leaf",
+  "title": "Restore original Leaf design and add desktop layout",
+  "purpose": "Return Leaf to its established warm mobile design and plant passport while adding a small colored-pencil garden illustration and a wider desktop presentation without changing stored records or export contracts.",
+  "category": "UI/UX",
+  "status": "Completed",
+  "completed_at": "2026-11-24T08:55:56+09:00",
+  "changes": [
+    "Reverted the responsive garden dashboard redesign to restore the previous Leaf navigation, pages, typography, colors, cards, and plant passport.",
+    "Added a transparent colored-pencil illustration of grass, flowers, and pots to the original home screen.",
+    "Added a desktop-only layout that moves navigation to the top and displays home plant cards in two columns while preserving the mobile layout."
+  ],
+  "technical_changes": {
+    "files": [
+      "src/App.jsx",
+      "src/components/BottomNav.jsx",
+      "src/components/PlantCard.jsx",
+      "src/pages/Home.jsx",
+      "src/pages/Passport.jsx",
+      "src/pages/PlantDetail.jsx",
+      "src/styles/theme.css",
+      "public/leaf-garden-pencil.png"
+    ],
+    "modules": [
+      "Leaf application shell",
+      "Home screen",
+      "Plant passport",
+      "Responsive theme"
+    ],
+    "data_changes": []
+  },
+  "tests": [
+    {
+      "name": "npm.cmd run lint",
+      "result": "passed"
+    },
+    {
+      "name": "npm.cmd run build",
+      "result": "passed",
+      "details": "Vite build completed; the existing large-chunk warning remains."
+    },
+    {
+      "name": "Responsive visual check",
+      "result": "passed",
+      "details": "Verified the home screen at 390x844 and 1200x900, and opened the restored plant passport in the local app."
+    }
+  ],
+  "next_actions": [
+    "Deploy the verified build when publication is requested."
+  ],
+  "sensitive_data_review": "passed"
+}

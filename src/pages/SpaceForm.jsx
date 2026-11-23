@@ -37,7 +37,7 @@ export default function SpaceForm() {
   }
 
   return (
-    <div className="page form-page">
+    <div className="page">
       <h1 className="page-title">{editing ? '공간 수정' : '공간 등록'}</h1>
       <p className="page-sub">이 공간의 빛과 바람은 어떤가요?</p>
 

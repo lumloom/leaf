@@ -42,7 +42,7 @@ export default function PlantDetail() {
 
   if (!plant) {
     return (
-      <div className="page plant-detail-page">
+      <div className="page">
         <div className="empty">식물을 찾을 수 없어요.</div>
       </div>
     );
@@ -101,16 +101,15 @@ export default function PlantDetail() {
   }
 
   return (
-    <div className="page plant-detail-page">
+    <div className="page">
       {obsidianNotice && <div className="obsidian-notice" role="status" aria-live="polite">{obsidianNotice}</div>}
-      <button className="btn btn-ghost btn-sm detail-back" onClick={() => navigate(-1)}>
+      <button className="btn btn-ghost btn-sm" onClick={() => navigate(-1)}>
         ‹ 뒤로
       </button>
 
-      <section className="plant-detail-hero">
-        <PhotoImg photoId={plant.photoId} alt={plant.name} className="plant-detail-photo" />
-        <div className="plant-detail-intro">
-          <span className="eyebrow">PLANT STORY</span>
+      <div style={{ display: 'flex', gap: 16, alignItems: 'center', margin: '12px 0 4px' }}>
+        <PhotoImg photoId={plant.photoId} alt={plant.name} style={{ width: 88, height: 88, borderRadius: 24 }} />
+        <div>
           <h1 className="page-title" style={{ marginBottom: 0 }}>
             {plant.name}
           </h1>
@@ -118,22 +117,22 @@ export default function PlantDetail() {
           {days && <div className="muted">함께한 지 {days}일째</div>}
           {plant.archived && <span className="badge">🕊️ 추억 속 식물</span>}
         </div>
-        <div className="plant-detail-status">
-          {!plant.archived && dday !== null && <><span>다음 물주기</span><strong>{dday < 0 ? `${-dday}일 지남` : dday === 0 ? '오늘' : `D-${dday}`}</strong></>}
-        </div>
-      </section>
+      </div>
 
-      <div className="quick-actions">
+      <div style={{ display: 'flex', gap: 8, margin: '14px 0' }}>
         {QUICK_ACTIONS.map((type) => (
-          <button key={type} className="btn btn-sm" onClick={() => quickLog(type)}>
+          <button key={type} className="btn btn-sm" style={{ flex: 1 }} onClick={() => quickLog(type)}>
             {EVENT_TYPES[type].icon} {EVENT_TYPES[type].label}
           </button>
         ))}
       </div>
-      <div className="plant-detail-columns">
-      <aside className="plant-detail-sidebar">
+      {!plant.archived && dday !== null && (
+        <div className="muted" style={{ marginBottom: 8 }}>
+          💧 {dday < 0 ? `물주기가 ${-dday}일 지났어요` : dday === 0 ? '오늘은 물 주는 날이에요' : `다음 물주기까지 ${dday}일`}
+        </div>
+      )}
 
-      <div className="card detail-info-card">
+      <div className="card">
         <div style={{ display: 'grid', gap: 6 }}>
           <InfoRow label="위치" value={space?.name ?? '미지정'} />
           {plant.potSize || plant.potMaterial ? (
@@ -165,11 +164,11 @@ export default function PlantDetail() {
         </button>
       </div>
 
-      <div className="detail-tools">
-        <Link to={`/plants/${plant.id}/passport`} className="btn btn-sm">
+      <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
+        <Link to={`/plants/${plant.id}/passport`} className="btn btn-sm" style={{ flex: 1 }}>
           🌿 식물 여권
         </Link>
-        <Link to={`/plants/${plant.id}/compare`} className="btn btn-sm">
+        <Link to={`/plants/${plant.id}/compare`} className="btn btn-sm" style={{ flex: 1 }}>
           📷 성장 비교
         </Link>
       </div>
@@ -197,9 +196,7 @@ export default function PlantDetail() {
       <Link to={`/plants/${plant.id}/soil`} className="btn btn-block">
         + 새 흙 레시피 남기기
       </Link>
-      </aside>
 
-      <section className="plant-detail-timeline">
       <h2 className="section-title">성장 타임라인</h2>
       <Link to={`/plants/${plant.id}/log`} className="btn btn-primary btn-block" style={{ marginBottom: 14 }}>
         ✏️ 오늘의 기록 남기기
@@ -217,23 +214,19 @@ export default function PlantDetail() {
           ))}
         </div>
       )}
-      </section>
-      </div>
 
-      <div className="danger-zone">
-      <button className="btn btn-danger" onClick={handleDelete}>
+      <button className="btn btn-danger btn-block" style={{ margin: '28px 0 0' }} onClick={handleDelete}>
         이 식물 보내주기 (삭제)
       </button>
       {plant.archived ? (
-        <button className="btn" onClick={handleRestore}>
+        <button className="btn btn-block" style={{ margin: '8px 0' }} onClick={handleRestore}>
           🌿 다시 우리집 식물로 (되돌리기)
         </button>
       ) : (
-        <button className="btn" onClick={handleArchive}>
+        <button className="btn btn-block" style={{ margin: '8px 0' }} onClick={handleArchive}>
           🕊️ 추억으로 보내주기 (이동)
         </button>
       )}
-      </div>
     </div>
   );
 }
