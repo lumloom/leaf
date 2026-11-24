@@ -1,0 +1,46 @@
+{
+  "schema_version": "lumloom-dev-log/v1",
+  "work_id": "leaf-light-app-icon-20261124",
+  "project_key": "leaf",
+  "title": "Replace the Leaf app icon with the light sprout design",
+  "purpose": "Use the supplied light sprout and flowerpot artwork as the Leaf browser and installed app icon while preserving the existing PWA installation configuration.",
+  "category": "UI/UX",
+  "status": "Completed",
+  "completed_at": "2026-11-24T22:24:30+09:00",
+  "changes": [
+    "Replaced the previous crayon plant icon source with the supplied minimal sprout and flowerpot artwork.",
+    "Generated matching 512px and 192px PNG variants from the supplied 1024px source.",
+    "Preserved the existing favicon, Apple touch icon, and PWA manifest references."
+  ],
+  "technical_changes": {
+    "files": [
+      "public/leaf-icon-source.png",
+      "public/leaf-icon-512.png",
+      "public/leaf-icon-192.png"
+    ],
+    "modules": [
+      "PWA app icons"
+    ],
+    "data_changes": []
+  },
+  "tests": [
+    {
+      "name": "npm.cmd run lint",
+      "result": "passed"
+    },
+    {
+      "name": "npm.cmd run build",
+      "result": "passed",
+      "details": "Vite build completed; the existing large-chunk warning remains."
+    },
+    {
+      "name": "Icon dimensions and visual inspection",
+      "result": "passed",
+      "details": "Verified the source is 1024x1024, the derived icons are 512x512 and 192x192 PNG files, and the sprout remains legible with maskable safe margins."
+    }
+  ],
+  "next_actions": [
+    "Deploy and verify both public icon URLs."
+  ],
+  "sensitive_data_review": "passed"
+}
