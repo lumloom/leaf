@@ -203,7 +203,14 @@ a {
 }
 
 .home-intro {
+  position: relative;
+  overflow: hidden;
   margin-bottom: 20px;
+}
+
+.home-intro > div {
+  position: relative;
+  z-index: 1;
 }
 
 .home-intro .page-sub {
@@ -216,6 +223,7 @@ a {
   margin-top: 8px;
   object-fit: contain;
   object-position: center bottom;
+  opacity: 0.72;
 }
 
 .home-actions {
@@ -534,17 +542,17 @@ a {
   }
 
   .home-intro {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 360px;
-    align-items: end;
-    min-height: 154px;
+    display: flex;
+    align-items: center;
+    min-height: 188px;
     margin-bottom: 28px;
     padding: 0 8px 0 4px;
     border-bottom: 1px solid var(--color-border);
   }
 
   .home-intro > div {
-    align-self: center;
+    width: 42%;
+    padding: 20px 0;
   }
 
   .home-intro .page-title {
@@ -552,9 +560,15 @@ a {
   }
 
   .home-pencil-illustration {
-    height: 150px;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
     margin-top: 0;
-    object-position: right bottom;
+    object-fit: cover;
+    object-position: center 52%;
+    opacity: 0.34;
+    pointer-events: none;
   }
 
   .home-plant-grid {
