@@ -1,1 +1,0 @@
-import{A as e,D as t,p as n,y as r}from"./index-CbRkx5QD.js";var i=e(t(),1);function a(){return(0,i.useSyncExternalStore)(r,n)}export{a as t};
