@@ -1,0 +1,45 @@
+{
+  "schema_version": "lumloom-dev-log/v1",
+  "work_id": "leaf-browser-install-manifest-20261124",
+  "project_key": "leaf",
+  "title": "Enable browser-native Leaf installation",
+  "purpose": "Let supported browsers detect the Leaf web app manifest on its GitHub Pages subpath and offer their native installation invitation without adding a custom prompt or service worker.",
+  "category": "Bug Fix",
+  "status": "Completed",
+  "completed_at": "2026-11-24T14:33:09+09:00",
+  "changes": [
+    "Changed the manifest and favicon links to deployment-relative paths so they resolve under the Leaf project URL.",
+    "Added explicit manifest id, start URL, and scope values that remain inside the Leaf deployment path.",
+    "Kept installation timing under browser control with no custom prompt or offline cache behavior."
+  ],
+  "technical_changes": {
+    "files": [
+      "index.html",
+      "public/manifest.webmanifest"
+    ],
+    "modules": [
+      "PWA manifest"
+    ],
+    "data_changes": []
+  },
+  "tests": [
+    {
+      "name": "npm.cmd run lint",
+      "result": "passed"
+    },
+    {
+      "name": "npm.cmd run build",
+      "result": "passed",
+      "details": "Vite build completed; the existing large-chunk warning remains."
+    },
+    {
+      "name": "Production manifest inspection",
+      "result": "passed",
+      "details": "Verified relative manifest and icon links plus id, start_url, scope, display, and icon values in dist."
+    }
+  ],
+  "next_actions": [
+    "Verify the deployed manifest and icon URLs and allow the supported browser to control invitation timing."
+  ],
+  "sensitive_data_review": "passed"
+}
