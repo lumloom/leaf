@@ -1,0 +1,44 @@
+{
+  "schema_version": "lumloom-dev-log/v1",
+  "work_id": "leaf-botanical-doodles-20261124",
+  "project_key": "leaf",
+  "title": "Refresh the Leaf home botanical illustration",
+  "purpose": "Replace the simple pot illustration with an original hand-drawn botanical sticker-sheet composition based on the user's visual references while preserving the restored Leaf interface and data behavior.",
+  "category": "UI/UX",
+  "status": "Completed",
+  "completed_at": "2026-11-24T09:03:35+09:00",
+  "changes": [
+    "Added a transparent colored-pencil illustration with assorted leaves, flowers, small pots, a watering can, and tiny garden creatures.",
+    "Updated the home header to use the new illustration and a descriptive Korean alternative text."
+  ],
+  "technical_changes": {
+    "files": [
+      "public/leaf-botanical-doodles.png",
+      "src/pages/Home.jsx"
+    ],
+    "modules": [
+      "Home screen"
+    ],
+    "data_changes": []
+  },
+  "tests": [
+    {
+      "name": "npm.cmd run lint",
+      "result": "passed"
+    },
+    {
+      "name": "npm.cmd run build",
+      "result": "passed",
+      "details": "Vite build completed; the existing large-chunk warning remains."
+    },
+    {
+      "name": "Responsive visual check",
+      "result": "passed",
+      "details": "Verified the new home illustration at 390x844 and 1200x900 in the local app."
+    }
+  ],
+  "next_actions": [
+    "Deploy the verified build when publication is requested."
+  ],
+  "sensitive_data_review": "passed"
+}

@@ -21,8 +21,8 @@ export default function Home() {
         </div>
         <img
           className="home-pencil-illustration"
-          src="./leaf-garden-pencil.png"
-          alt="색연필로 그린 풀과 꽃, 화분"
+          src="./leaf-botanical-doodles.png"
+          alt="손그림으로 그린 잎과 꽃, 화분과 정원 친구들"
         />
       </header>
 
