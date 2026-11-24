@@ -19,11 +19,14 @@ export default function Home() {
           <h1 className="page-title">🌿 우리집 식물</h1>
           <p className="page-sub">A place where plants grow, and memories grow with them.</p>
         </div>
-        <img
-          className="home-pencil-illustration"
-          src="./leaf-botanical-background.png"
-          alt="은은하게 펼쳐진 잎과 꽃, 화분과 정원 소품"
-        />
+        <picture className="home-pencil-art">
+          <source media="(min-width: 900px)" srcSet="./leaf-crayon-pots-desktop.png" />
+          <img
+            className="home-pencil-illustration"
+            src="./leaf-crayon-pots-mobile.png"
+            alt="크레용으로 그린 여러 화분과 식물"
+          />
+        </picture>
       </header>
 
       {plants.length === 0 ? (

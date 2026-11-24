@@ -1,0 +1,48 @@
+{
+  "schema_version": "lumloom-dev-log/v1",
+  "work_id": "leaf-crayon-responsive-20261124",
+  "project_key": "leaf",
+  "title": "Add responsive crayon garden illustrations",
+  "purpose": "Replace the home hero artwork with a cheerful crayon garden that uses a compact composition on mobile and a longer row of potted plants on desktop.",
+  "category": "UI/UX",
+  "status": "Completed",
+  "completed_at": "2026-11-24T14:21:28+09:00",
+  "changes": [
+    "Created a compact mobile illustration with five potted plants and a plain watering can in a wax-crayon texture.",
+    "Created a separate panoramic desktop illustration with a longer row of varied potted plants.",
+    "Switched the home hero between the two assets at the desktop breakpoint and tuned their scale and opacity for each layout."
+  ],
+  "technical_changes": {
+    "files": [
+      "public/leaf-crayon-pots-mobile.png",
+      "public/leaf-crayon-pots-desktop.png",
+      "src/pages/Home.jsx",
+      "src/styles/theme.css"
+    ],
+    "modules": [
+      "Home screen",
+      "Responsive theme"
+    ],
+    "data_changes": []
+  },
+  "tests": [
+    {
+      "name": "npm.cmd run lint",
+      "result": "passed"
+    },
+    {
+      "name": "npm.cmd run build",
+      "result": "passed",
+      "details": "Vite build completed; the existing large-chunk warning remains."
+    },
+    {
+      "name": "Responsive visual check",
+      "result": "passed",
+      "details": "Verified the compact mobile composition at 390x844 and the panoramic desktop composition in the local app."
+    }
+  ],
+  "next_actions": [
+    "Publish the verified build to GitHub Pages."
+  ],
+  "sensitive_data_review": "passed"
+}
