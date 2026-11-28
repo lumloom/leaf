@@ -15,6 +15,7 @@ let message = '';
 let isError = false;
 let started = false;
 let syncTimer = 0;
+let syncQueued = null;
 
 function loadMeta() {
   try {
@@ -45,7 +46,9 @@ function listLocalRecords() {
 }
 
 function localRecord(entityType, entityId) {
-  return listLocalRecords().find((record) => record.entityType === entityType && record.entityId === entityId) || null;
+  if (!ENTITY_TYPES.includes(entityType)) return null;
+  const payload = getState()[entityType].find(({ id }) => id === entityId);
+  return payload ? { entityType, entityId, payload, clientUpdatedAt: payload.updatedAt || payload.createdAt || null } : null;
 }
 
 function photoIds(record) {
@@ -80,9 +83,11 @@ async function hydrateAssets(record) {
   }
 }
 
-async function applyRemote(record) {
+async function applyRemote(record, canApply = () => true) {
   if (record.status === 'active') await hydrateAssets(record);
+  if (!canApply()) return false;
   applyRemoteEntity(record.entity_type, record.entity_id, record.payload, record.status);
+  return true;
 }
 
 function trackRemote(record) {
@@ -151,7 +156,7 @@ async function pushRecord(local, entityType, entityId, tracked) {
       if (error.code === '23505') return false;
       throw error;
     }
-    trackRemote(data);
+    acknowledgePush(data, tracked);
     return true;
   }
 
@@ -160,12 +165,24 @@ async function pushRecord(local, entityType, entityId, tracked) {
     .eq('version', tracked.remoteVersion).select();
   if (error) throw error;
   if (!data.length) return false;
-  trackRemote(data[0]);
+  acknowledgePush(data[0], tracked);
   return true;
 }
 
+function acknowledgePush(record, sent) {
+  const key = keyOf(record.entity_type, record.entity_id);
+  const current = meta.records[key];
+  if (current === sent) trackRemote(record);
+  else if (current?.dirty) meta.records[key] = { ...current, remoteVersion: record.version };
+  saveMeta();
+}
+
 export async function runSync(includeUntracked = false) {
-  if (!user || busy) return;
+  if (!user) return;
+  if (busy) {
+    syncQueued = Boolean(syncQueued || includeUntracked);
+    return;
+  }
   if (!navigator.onLine) {
     setMessage('오프라인입니다. 연결되면 다시 동기화합니다.');
     return;
@@ -175,16 +192,18 @@ export async function runSync(includeUntracked = false) {
   try {
     const remoteRecords = await fetchRemote();
     const localRecords = listLocalRecords();
-    const localByKey = Object.fromEntries(localRecords.map((record) => [keyOf(record.entityType, record.entityId), record]));
     const remoteByKey = Object.fromEntries(remoteRecords.map((record) => [keyOf(record.entity_type, record.entity_id), record]));
 
     for (const remote of remoteRecords) {
       const key = keyOf(remote.entity_type, remote.entity_id);
-      const local = localByKey[key];
+      const local = localRecord(remote.entity_type, remote.entity_id);
       const tracked = meta.records[key];
-      if (!local && remote.status === 'active') {
-        await applyRemote(remote);
-        trackRemote(remote);
+      const canApply = () => meta.records[key] === tracked;
+      if (tracked?.dirty && tracked.deleted) {
+        if (remote.status === 'deleted') trackRemote(remote);
+        else if (tracked.remoteVersion !== remote.version) meta.conflicts[key] = { remote };
+      } else if (!local && remote.status === 'active') {
+        if (await applyRemote(remote, canApply)) trackRemote(remote);
       } else if (!local && remote.status === 'deleted') {
         trackRemote(remote);
       } else if (!tracked) {
@@ -195,29 +214,32 @@ export async function runSync(includeUntracked = false) {
           meta.conflicts[key] = { remote };
         }
       } else if (tracked.remoteVersion !== remote.version) {
-        await applyRemote(remote);
-        trackRemote(remote);
+        if (await applyRemote(remote, canApply)) trackRemote(remote);
       }
     }
 
     if (includeUntracked) {
       for (const local of localRecords) {
         const key = keyOf(local.entityType, local.entityId);
+        if (!localRecord(local.entityType, local.entityId)) continue;
         if (meta.records[key] || meta.conflicts[key]) continue;
         if (remoteByKey[key]) meta.conflicts[key] = { remote: remoteByKey[key] };
         else meta.records[key] = { remoteVersion: null, dirty: true };
       }
     }
 
-    for (const [key, tracked] of Object.entries(meta.records)) {
-      if (!tracked.dirty || meta.conflicts[key]) continue;
+    for (const key of Object.keys(meta.records)) {
+      const tracked = meta.records[key];
+      if (!tracked?.dirty || meta.conflicts[key]) continue;
       const separator = key.indexOf(':');
       const entityType = key.slice(0, separator);
       const entityId = key.slice(separator + 1);
-      const pushed = await pushRecord(localByKey[key] || localRecord(entityType, entityId), entityType, entityId, tracked);
+      const local = tracked.deleted ? null : localRecord(entityType, entityId);
+      if (!local && !tracked.deleted) continue;
+      const pushed = await pushRecord(local, entityType, entityId, tracked);
       if (!pushed) {
         const latest = (await fetchRemote()).find((record) => keyOf(record.entity_type, record.entity_id) === key);
-        if (latest) meta.conflicts[key] = { remote: latest };
+        if (latest && meta.records[key] === tracked) meta.conflicts[key] = { remote: latest };
       }
     }
 
@@ -232,6 +254,11 @@ export async function runSync(includeUntracked = false) {
   } finally {
     busy = false;
     await emit();
+    if (syncQueued !== null) {
+      const includeQueuedUntracked = syncQueued;
+      syncQueued = null;
+      void runSync(includeQueuedUntracked);
+    }
   }
 }
 
@@ -280,7 +307,8 @@ export async function resolveConflict(key, resolution) {
     setMessage('클라우드 기록을 이 기기에 적용했어요.');
     return;
   }
-  meta.records[key] = { remoteVersion: conflict.remote.version, dirty: true };
+  const { entity_type: entityType, entity_id: entityId } = conflict.remote;
+  meta.records[key] = { remoteVersion: conflict.remote.version, dirty: true, deleted: !localRecord(entityType, entityId) };
   delete meta.conflicts[key];
   saveMeta();
   await runSync(false);

@@ -24,7 +24,7 @@ npm run deploy   # 빌드 후 GitHub Pages(gh-pages 브랜치)에 배포
 - **성장 타임라인** — 일기·물주기·분갈이·비료·새잎·가지치기·삽목/물꽂이·화분위치변경·병충해·사진 기록을 시간순으로 표시
 - **기록 수정** — 기존 타임라인 기록의 종류·날짜·내용·사진을 다시 불러와 수정
 - **퀵 기록** — 상세 화면에서 물주기/비료/새잎 원탭 기록
-- **예시 데이터** — 첫 실행 시 샘플로 파키라 + 거실 창가 최소 구성 (설정에서 전체 삭제)
+- **빈 정원에서 시작** — 첫 실행 시 내 식물과 공간을 직접 등록
 - **나만의 흙 레시피** — 배합 비율(막대 표시) + 평점 + 메모, 저장할 때마다 히스토리로 쌓임
 - **성장 사진 비교** — 타임라인 사진 두 장을 골라 Before/After 오버레이 슬라이더
 - **식물 여권** — 프로필 카드 (이름·품종·온 날·위치·화분·흙 레시피·최근 관리·성장 점수)
@@ -78,7 +78,7 @@ src/
     match.js     # 위치 추천 점수 계산
     photoStore.js# 사진은 IndexedDB에 Blob 저장 (긴 변 1280px 리사이즈)
     plantUtils.js# 날짜·물주기·식물 기록 계산 유틸리티
-    seed.js      # 예시 데이터
+    seed.js      # 이전 버전의 초기 예시 정리
   hooks/       # useStore (useSyncExternalStore)
   components/  # PlantCard, RecipeCard, PhotoInput, PhotoImg, Stars, BottomNav, DialogHost
   pages/       # Home, PlantForm, PlantDetail, LogForm, Spaces, SpaceForm, SoilRecipeForm,

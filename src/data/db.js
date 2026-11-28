@@ -2,6 +2,8 @@
 // 컬렉션 단위(spaces / plants / events)로 읽고 쓰는 구조라
 // 추후 Firebase/Supabase로 옮길 때 이 파일만 교체하면 된다.
 
+import { withoutLegacyExamples } from './seed.js';
+
 const STORAGE_KEY = 'lumloom-leaf/v1';
 
 const emptyState = () => ({
@@ -19,7 +21,16 @@ function load() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return emptyState();
-    return { ...emptyState(), ...JSON.parse(raw) };
+    const loaded = { ...emptyState(), ...JSON.parse(raw) };
+    const cleaned = withoutLegacyExamples(loaded);
+    if (cleaned !== loaded) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(cleaned));
+      } catch {
+        return loaded;
+      }
+    }
+    return cleaned;
   } catch {
     return emptyState();
   }
@@ -126,15 +137,6 @@ export const events = {
   save: (event, notify = true) => upsert('events', event, notify),
   remove: (id, notify = true) => remove('events', id, notify),
 };
-
-export function markSeeded() {
-  state = { ...state, meta: { ...state.meta, seeded: true } };
-  emit();
-}
-
-export function isSeeded() {
-  return !!state.meta.seeded;
-}
 
 export function resetAll() {
   const removed = ['spaces', 'plants', 'events', 'soilRecipes'].flatMap((entityType) => state[entityType].map(({ id }) => ({ entityType, id })));

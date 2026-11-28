@@ -1,0 +1,25 @@
+{
+  "schema_version": "lumloom-dev-log/v1",
+  "work_id": "leaf-delete-sync-20261128",
+  "project_key": "leaf",
+  "title": "Stop generating sample gardens and preserve pending deletes",
+  "purpose": "Prevent Leaf sync from restoring a record while its deletion is pending and start new gardens empty.",
+  "category": "Bug Fix",
+  "status": "Completed",
+  "completed_at": "2026-11-28T16:03:43+09:00",
+  "changes": [
+    "Removed automatic seeding and recognize untouched complete legacy samples in local storage.",
+    "Prioritize pending deletions, retain version conflicts, and preserve local mutations made during a sync push."
+  ],
+  "technical_changes": {
+    "files": ["README.md", "src/main.jsx", "src/data/db.js", "src/data/seed.js", "src/data/sync.js", "src/pages/Settings.jsx", "test/sync.test.js"],
+    "data_changes": ["Recognize intact legacy samples and reuse the existing cloud deletion status."]
+  },
+  "tests": [
+    {"name": "Delete sync regression test", "result": "passed"},
+    {"name": "npm.cmd run lint", "result": "passed"},
+    {"name": "npm.cmd run build", "result": "passed"}
+  ],
+  "next_actions": ["Verify publication and targeted example cleanup."],
+  "sensitive_data_review": "passed"
+}

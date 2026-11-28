@@ -93,7 +93,7 @@ export default function Settings() {
       <div className="card">
         <div style={{ fontFamily: 'var(--font-round)', marginBottom: 8 }}>데이터 초기화</div>
         <div className="muted" style={{ marginBottom: 12 }}>
-          예시 데이터를 포함해 모든 기록을 지우고 빈 상태에서 시작해요.
+          모든 기록을 지우고 빈 상태에서 시작해요.
         </div>
         <button className="btn btn-danger" onClick={handleReset}>
           모든 데이터 비우기
